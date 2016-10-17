@@ -22,17 +22,6 @@ product = tf.matmul(matrix1,matrix2)
 #########################################################################################
 
 #非with形式
-sess = tf.session()
-
-#调用sess的run()方法来执行矩阵乘法op，传入product作为该方法的参数
-#传入product以向run()方法表明我们希望返回矩阵乘法op的输出。
-#整个执行过程是自动化的, 会话负责传递 op 所需的全部输入。 op 通常是并发执行的。
-#函数调用 run(product) 触发了图中三个 op (两个常量 op 和一个矩阵乘法 op) 的执行。
-#返回的result是一个numpy的ndarry对象。
-result = sess.run(product)
-
-#输出结果
-print result
-
-#任务完成
-sess.close()
+with tf.Session() as sess:
+    result = sess.run([product])
+    print result
