@@ -22,7 +22,7 @@ product = tf.matmul(matrix1,matrix2)
 #########################################################################################
 
 #非with形式
-sess = tf.session()
+sess = tf.Session()
 
 #调用sess的run()方法来执行矩阵乘法op，传入product作为该方法的参数
 #传入product以向run()方法表明我们希望返回矩阵乘法op的输出。
