@@ -48,7 +48,7 @@ def main(_):
   W = tf.Variable(tf.zeros([784, 10]))
   # b 是偏置值
   b = tf.Variable(tf.zeros([10]))
-  y = tf.matmul(x, W) + b
+  y = tf.nn.softmax(tf.matmul(x, W) + b)
 
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, 10])
