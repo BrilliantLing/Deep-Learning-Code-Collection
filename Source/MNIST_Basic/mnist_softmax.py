@@ -43,12 +43,12 @@ def main(_):
   # Create the model
   # x 是一个占位符，在运行计算时输入这个值，None表示第一个维度可以是任意长度
   x = tf.placeholder(tf.float32, [None, 784])
-
-  # W 是一个变量，维度是[784,10]
+   # W 是一个变量，维度是[784,10]
   W = tf.Variable(tf.zeros([784, 10]))
   # b 是偏置值
   b = tf.Variable(tf.zeros([10]))
-  y = tf.nn.softmax(tf.matmul(x, W) + b)
+  # y 是softmax函数的输入
+  y = tf.matmul(x, W) + b
 
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, 10])
@@ -62,7 +62,9 @@ def main(_):
   #
   # So here we use tf.nn.softmax_cross_entropy_with_logits on the raw
   # outputs of 'y', and then average across the batch.
+  # 就是计算softmax回归下的交叉熵（就是吴恩达教程中所说的代价函数costFuction）
   cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, y_))
+  # 使用梯度下降最小化交叉熵
   train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
   sess = tf.InteractiveSession()
