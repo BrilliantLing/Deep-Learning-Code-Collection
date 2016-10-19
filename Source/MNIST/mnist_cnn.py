@@ -43,15 +43,15 @@ def train():
 
     def variable_summaries(var, name):
     """Attach a lot of summaries to a Tensor."""
-    with tf.name_scope('summaries'):
-        mean = tf.reduce_mean(var)
-        tf.scalar_summary('mean/' + name, mean)
-        with tf.name_scope('stddev'):
-            stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-        tf.scalar_summary('stddev/' + name, stddev)
-        tf.scalar_summary('max/' + name, tf.reduce_max(var))
-        tf.scalar_summary('min/' + name, tf.reduce_min(var))
-        tf.histogram_summary(name, var)
+        with tf.name_scope('summaries'):
+            mean = tf.reduce_mean(var)
+            tf.scalar_summary('mean/' + name, mean)
+            with tf.name_scope('stddev'):
+                stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
+            tf.scalar_summary('stddev/' + name, stddev)
+            tf.scalar_summary('max/' + name, tf.reduce_max(var))
+            tf.scalar_summary('min/' + name, tf.reduce_min(var))
+            tf.histogram_summary(name, var)
     
     def nn_layer(input_tensor, input_dim, output_dim, layer_name, act=tf.nn.relu):
     """Reusable code for making a simple neural net layer.
@@ -102,8 +102,7 @@ def train():
         tf.scalar_summary('cross entropy', cross_entropy)   
 
     with tf.name_scope('train'):
-        train_step = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(
-        cross_entropy)
+        train_step = tf.train.AdamOptimizer(FLAGS.learning_rate).minimize(cross_entropy)
 
     with tf.name_scope('accuracy'):
         with tf.name_scope('correct_prediction'):
@@ -157,15 +156,15 @@ def main(_):
     train()
 
     #二维卷积运算
-    def conv2d(x, W):
+    #def conv2d(x, W):
         #卷积步长为1，边距为0
         #原型函数为tf.nn.conv2d(input, filter, strides, padding, use_cudnn_on_gpu=None, data_format=None, name=None)
-        return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+        #return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
     #池化（下采样）
-    def max_pool_2x2(x):
+    #def max_pool_2x2(x):
         #2x2大小的模板，max pooling
-        return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+        #return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
     
 if __name__ == '__main__':
