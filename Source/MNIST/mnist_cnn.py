@@ -8,6 +8,8 @@ import argparse
 
 from tensorflow.examples.tutorials.mnist import input_data
 
+import tensorflow as tf
+
 FLAGS = None
 
 def main(_):
