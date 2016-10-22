@@ -32,6 +32,7 @@ def main(_):
     sess=tf.InteractiveSession()
 
     x = tf.placeholder(tf.float32, [None, 784])
+    y_ = tf.placeholder(tf.float32, [None, 10])
 
     x_image = tf.reshape(x, [-1,28,28,1])
 
