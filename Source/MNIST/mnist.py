@@ -84,9 +84,9 @@ def inference(images, hidden1_units, hidden2_units):
     hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
   # Linear
   """
-  softmax层的线性部分，权重为形状为[hidden2_units,NUM_CLASSES](NUM_CLASSES=10)
-  权重为标准差为1/sqrt(hidden2_units)的标准正态分布。
-
+  softmax层的线性部分，权重初始化为形状为[hidden2_units,NUM_CLASSES](NUM_CLASSES=10)
+  标准差为1/sqrt(hidden2_units)的标准正态分布。
+  偏置初始化为0
   """
   with tf.name_scope('softmax_linear'):
     weights = tf.Variable(
@@ -98,7 +98,10 @@ def inference(images, hidden1_units, hidden2_units):
     logits = tf.matmul(hidden2, weights) + biases
   return logits
 
-
+"""
+损失函数(代价函数)
+计算交叉熵(就是在Andrew Ng公开课中说的代价函数)
+"""
 def loss(logits, labels):
   """Calculates the loss from the logits and the labels.
 
