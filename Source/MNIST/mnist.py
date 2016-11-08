@@ -54,6 +54,13 @@ def inference(images, hidden1_units, hidden2_units):
     softmax_linear: Output tensor with the computed logits.
   """
   # Hidden 1
+  """
+  第一个隐含层，定义在作用域空间'hidden1'中，其实就是输入层
+  其中与下一层的连接的权重是一个正态分布，标准差是1/sqrt(float(IMAGE_PIXELS)),
+  形状是[IMAGE_PIXELS,hidden1_units]
+  偏置初始化为0
+  激活函数使用relu函数
+  """
   with tf.name_scope('hidden1'):
     weights = tf.Variable(
         tf.truncated_normal([IMAGE_PIXELS, hidden1_units],
@@ -63,6 +70,10 @@ def inference(images, hidden1_units, hidden2_units):
                          name='biases')
     hidden1 = tf.nn.relu(tf.matmul(images, weights) + biases)
   # Hidden 2
+  """
+  第二个隐含层，其实是第一个隐含层
+  和上一层一样，进行了相同的权值，偏置的初始化，使用了相同的激活函数
+  """
   with tf.name_scope('hidden2'):
     weights = tf.Variable(
         tf.truncated_normal([hidden1_units, hidden2_units],
@@ -72,6 +83,11 @@ def inference(images, hidden1_units, hidden2_units):
                          name='biases')
     hidden2 = tf.nn.relu(tf.matmul(hidden1, weights) + biases)
   # Linear
+  """
+  softmax层的线性部分，权重为形状为[hidden2_units,NUM_CLASSES](NUM_CLASSES=10)
+  权重为标准差为1/sqrt(hidden2_units)的标准正态分布。
+
+  """
   with tf.name_scope('softmax_linear'):
     weights = tf.Variable(
         tf.truncated_normal([hidden2_units, NUM_CLASSES],
