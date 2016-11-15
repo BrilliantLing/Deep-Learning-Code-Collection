@@ -41,18 +41,14 @@ NUM_CLASSES = 10
 IMAGE_SIZE = 28
 IMAGE_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 
-
+"""
+构建神经网络的模型
+image:输入的训练样本
+hidden1_units:第一个隐层的大小
+hidden2_units:第二层隐层的大小
+logits:softmax层的线性输出
+"""
 def inference(images, hidden1_units, hidden2_units):
-  """Build the MNIST model up to where it may be used for inference.
-
-  Args:
-    images: Images placeholder, from inputs().
-    hidden1_units: Size of the first hidden layer.
-    hidden2_units: Size of the second hidden layer.
-
-  Returns:
-    softmax_linear: Output tensor with the computed logits.
-  """
   # Hidden 1
   """
   第一个隐含层，定义在作用域空间'hidden1'中，其实就是输入层
@@ -98,20 +94,16 @@ def inference(images, hidden1_units, hidden2_units):
     logits = tf.matmul(hidden2, weights) + biases
   return logits
 
+
+
 """
 损失函数(代价函数)
-计算交叉熵(就是在Andrew Ng公开课中说的代价函数)
+计算交叉熵(就是在Andrew Ng公开课中说的logistic回归的代价函数)
+logits：神经网络的输出
+label:标签。
+loss:代价(损失)
 """
 def loss(logits, labels):
-  """Calculates the loss from the logits and the labels.
-
-  Args:
-    logits: Logits tensor, float - [batch_size, NUM_CLASSES].
-    labels: Labels tensor, int32 - [batch_size].
-
-  Returns:
-    loss: Loss tensor of type float.
-  """
   labels = tf.to_int64(labels)
   cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
       logits, labels, name='xentropy')
@@ -119,23 +111,15 @@ def loss(logits, labels):
   return loss
 
 
+"""
+训练函数
+创建了一个summarizer来对代价(loss)进行跟踪
+创建了一个梯度下降的优化器，可应用于训练参数
+loss:代价(损失)
+learning_rate:学习率
+train_op:一个训练Op，这个op需要被传入sess.run()
+"""
 def training(loss, learning_rate):
-  """Sets up the training Ops.
-
-  Creates a summarizer to track the loss over time in TensorBoard.
-
-  Creates an optimizer and applies the gradients to all trainable variables.
-
-  The Op returned by this function is what must be passed to the
-  `sess.run()` call to cause the model to train.
-
-  Args:
-    loss: Loss tensor, from loss().
-    learning_rate: The learning rate to use for gradient descent.
-
-  Returns:
-    train_op: The Op for training.
-  """
   # Add a scalar summary for the snapshot loss.
   tf.scalar_summary(loss.op.name, loss)
   # Create the gradient descent optimizer with the given learning rate.
@@ -148,6 +132,11 @@ def training(loss, learning_rate):
   return train_op
 
 
+"""
+评估函数
+评估了在标签集
+
+"""
 def evaluation(logits, labels):
   """Evaluate the quality of the logits at predicting the label.
 
