@@ -51,7 +51,7 @@ def main(_):
     h_pool2 = max_pool_2x2(h_conv2)
 
     #"""
-    W_conv3 = weight_variable([5, 5, 64, 32])
+    W_conv3 = weight_variable([5, 5, 64, 128])
     b_conv3 = bias_variable([128])
     h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
     h_pool3 = max_pool_2x2(h_conv3)
