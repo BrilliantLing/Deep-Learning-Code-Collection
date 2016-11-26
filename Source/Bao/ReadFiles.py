@@ -6,7 +6,7 @@ cwd = os.getcwd()
 
 def create_record():
     writer = tf.python_io.TFRecordWriter("train.tfrecords")
-    for index, name in enumerate():
+    for index, name in os.lsitdir(cwd):
         class_path = cwd + name + "/"
         for img_name in os.listdir(class_path):
             img_path = class_path + img_name
