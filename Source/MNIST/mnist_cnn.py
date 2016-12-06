@@ -88,7 +88,7 @@ def main(_):
     merged = tf.merge_all_summaries()
     writer = tf.train.SummaryWriter("/home/tuxiang/LingJiawei/MNIST_DATA",sess.graph)
     sess.run(tf.initialize_all_variables())
-    for i in range(20000):
+    for i in range(120000):
         batch = mnist.train.next_batch(1)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
