@@ -84,7 +84,7 @@ def main(_):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
         
     merged = tf.merge_all_summaries()
-    writer = tf.train.SummaryWriter("/home/tuxiang/LingJiawei/Deep-Learning-Code-Collection/Source/MNIST",sess.graph)
+    writer = tf.train.SummaryWriter("/home/tuxiang/LingJiawei/MNIST_DATA",sess.graph)
     sess.run(tf.initialize_all_variables())
     for i in range(2000):
         batch = mnist.train.next_batch(50)
