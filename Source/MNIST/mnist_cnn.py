@@ -48,6 +48,7 @@ def main(_):
         b_conv1 = bias_variable([32])
         h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         h_pool1 = max_pool_2x2(h_conv1)
+        
         tf.image_summary('feature1',h_pool1,25)
          
     with tf.name_scope('conv_layer2'):
@@ -87,8 +88,8 @@ def main(_):
     merged = tf.merge_all_summaries()
     writer = tf.train.SummaryWriter("/home/tuxiang/LingJiawei/MNIST_DATA",sess.graph)
     sess.run(tf.initialize_all_variables())
-    for i in range(2000):
-        batch = mnist.train.next_batch(50)
+    for i in range(20000):
+        batch = mnist.train.next_batch(1)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
             print("step %d, training accuracy %g" %(i, train_accuracy))
@@ -106,5 +107,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='/tmp/data',
                       help='Directory for storing data')
+    parser.add_argument('--save_data_dir', type=str, default='/home/tuxiang/LingJiawei/TrainedModel',
+                      help='Directory for storing model')
     FLAGS = parser.parse_args()
     tf.app.run()
