@@ -35,16 +35,20 @@ def main(_):
 
     sess=tf.InteractiveSession()
 
-    x = tf.placeholder(tf.float32, [None, 784])
-    y_ = tf.placeholder(tf.float32, [None, 10])
-
-    x_image = tf.reshape(x, [-1,28,28,1])
+    with tf.name_scope('input'):
+        x = tf.placeholder(tf.float32, [None, 784])
+        y_ = tf.placeholder(tf.float32, [None, 10])
+    
+    with tf.name_scope('input_reshape'):
+        x_image = tf.reshape(x, [-1,28,28,1])
+        tf.image_summary('input',x_image)
 
     with tf.name_scope('conv_layer1'):
         W_conv1 = weight_variable([5, 5, 1, 32])
         b_conv1 = bias_variable([32])
         h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         h_pool1 = max_pool_2x2(h_conv1)
+        
     
     with tf.name_scope('conv_layer2'):
         W_conv2 = weight_variable([5, 5, 32, 64])
@@ -73,7 +77,8 @@ def main(_):
     with tf.name_scope('softmax'):
         y_conv=tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
-    cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
+    with tf.name_scope('loss'):
+        cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
