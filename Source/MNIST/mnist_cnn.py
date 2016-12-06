@@ -33,7 +33,7 @@ def main(_):
     def max_pool_2x2(x):
         return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
 
-    sess=tf.Session()
+    sess=tf.InteractiveSession()
 
     with tf.name_scope('input'):
         x = tf.placeholder(tf.float32, [None, 784])
