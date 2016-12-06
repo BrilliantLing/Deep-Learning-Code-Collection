@@ -86,7 +86,7 @@ def main(_):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
         
     merged = tf.merge_all_summaries()
-    writer = tf.train.SummaryWriter(FLAGS.save_data_dir,sess.graph)
+    writer = tf.train.SummaryWriter(FLAGS.summary_data_dir,sess.graph)
     sess.run(tf.initialize_all_variables())
     for i in range(2000):
         batch = mnist.train.next_batch(50)
@@ -108,6 +108,8 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', type=str, default='/tmp/data',
                       help='Directory for storing data')
     parser.add_argument('--save_data_dir', type=str, default='/home/tuxiang/LingJiawei/TrainedModel',
+                      help='Directory for storing model')
+    parser.add_argument('--summary_data_dir', type=str, default='/home/tuxiang/LingJiawei/MNIST_DATA',
                       help='Directory for storing model')
     FLAGS = parser.parse_args()
     tf.app.run()
