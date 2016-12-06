@@ -33,7 +33,7 @@ def main(_):
     def max_pool_2x2(x):
         return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
 
-    sess=tf.InteractiveSession()
+    sess=tf.Session()
 
     with tf.name_scope('input'):
         x = tf.placeholder(tf.float32, [None, 784])
@@ -48,20 +48,13 @@ def main(_):
         b_conv1 = bias_variable([32])
         h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         h_pool1 = max_pool_2x2(h_conv1)
-        
-    
+         
     with tf.name_scope('conv_layer2'):
         W_conv2 = weight_variable([5, 5, 32, 64])
         b_conv2 = bias_variable([64])
         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
         h_pool2 = max_pool_2x2(h_conv2)
 
-    """
-    W_conv3 = weight_variable([3, 3, 64, 128])
-    b_conv3 = bias_variable([128])
-    h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
-    h_pool3 = max_pool_2x2(h_conv3)
-    """
     with tf.name_scope('fully_connected1'):
         W_fc1 = weight_variable([7 * 7 * 64, 1024])
         b_fc1 = bias_variable([1024])
@@ -79,19 +72,31 @@ def main(_):
 
     with tf.name_scope('loss'):
         cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
-    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-    correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        tf.scalar_summary('loss',cross_entropy)
+
+    with tf.name_scope('train_step'):
+        train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+
+    with tf.name_scope('correct_prediction'):   
+        correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
+
+    with tf.name_scope('accuracy'):
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        
+    merged = tf.merge_all_summaries()
+    writer = tf.train.SummaryWriter("/home/tuxiang/LingJiawei/Deep-Learning-Code-Collection/Source/MNIST",sess.graph)
     sess.run(tf.initialize_all_variables())
-    for i in range(100):
+    for i in range(2000):
         batch = mnist.train.next_batch(50)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
             print("step %d, training accuracy %g" %(i, train_accuracy))
-        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+            result = sess.run(merged,feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
+            writer.add_summary(result,i)
+        sess.run(train_step,feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
-    saver = tf.train.Saver()
-    save_path = saver.save(sess,model_path)
+    #saver = tf.train.Saver()
+    #save_path = saver.save(sess,model_path)
 
     print("test accuracy %g" %accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
