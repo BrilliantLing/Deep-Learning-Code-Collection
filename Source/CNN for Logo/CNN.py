@@ -10,6 +10,10 @@ import argparse
 
 import os
 
+with tf.name_scope("input"):
+    x = tf.placeholder(tf.float32, [None, 1024])
+    y_ = tf.placeholder(tf.float32, [None, 18])
+
 def cnn_model(input_images):
     def weight_variable(shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
@@ -28,7 +32,7 @@ def cnn_model(input_images):
     
 
     with tf.name_scope("images"):
-        x_image = tf.reshape(x, [-1,48,48,1])
+        x_image = tf.reshape(x, [-1,32,32,1])
         tf.image_summary('input',x_image,25)
 
     with tf.name_scope("conv1"):
@@ -50,34 +54,35 @@ def cnn_model(input_images):
         h_pool3 = max_pool_2x2(h_conv3)
 
     with tf.name_scope("fc1"):
-        W_fc1 = weight_variable([4*4*16,512])
+        W_fc1 = weight_variable([2*2*16,512])
         b_fc1 = bias_variable([512])
-        h_pool3_flat = tf.reshape([h_pool3,4*4*16])
+        h_pool3_flat = tf.reshape([h_pool3,2*2*16])
         h_fc1 = tf.matmul(h_pool2_flat, W_fc1) + b_fc1
         keep_prob = tf.placeholder("float")
         h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
     with tf.name_scope("fc2"):
-        W_fc2 = weight_variable([512,18])
+        W_fc2 = weight_variable([512,10])
         b_fc2 = bias_variable([10])
         lh_fc2 = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
     return lh_fc2
 
-def train(_):
-    with tf.name_scope("input"):
-        x = tf.placeholder(tf.float32, [None, 2304])
-        y_ = tf.placeholder(tf.float32, [None, 18])
-    
+def train(inputs,labels,sess,target):    
     with tf.name_scope("model_output"):
-        model_output = cnn_model(x)
+        model_output = cnn_model(inputs)
 
-    with tf.name_scope("softmax_cost"):
-        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(model_output, y_))
+    with tf.name_scope("cost"):
+        cost=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(model_output, labels))
 
     with tf.name_scope("train_step"):
         trian_step = train_step = tf.train.AdamOptimizer(1e-4).minimize(cost)
 
     with tf.name_scoep("prediction"):
         prediction = tf.argmax(model_output, 1)
-        correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
+        correct_prediction = tf.equal(tf.argmax(model_output,1), tf.argmax(labels,1))
+
+    with tf.name_scope("accuracy"):
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+
+     sess.run(tf.global_variables_initializer())
