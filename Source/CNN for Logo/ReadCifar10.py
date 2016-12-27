@@ -14,6 +14,8 @@ NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 50000
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000
 
 def read_cifar10(filename_queue):
+"""
+"""
     class CIFAR10Record(object):
         pass
     result = CIFAR10Record()
@@ -39,6 +41,8 @@ def read_cifar10(filename_queue):
     return result
     
 def _generate_image_and_label_batch(image,label,min_queue_examples,batch_size,shuffle):
+    """
+    """
     num_preprocess_threads = 12
     if shuffle:
         image_batch,label_batch = tf.train.shuffle_batch(
