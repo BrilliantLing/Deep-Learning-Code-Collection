@@ -85,7 +85,7 @@ def _generate_image_and_label_batch(image,label,min_queue_examples,batch_size,sh
             capacity=min_queue_examples + 3 * batch_size
         )
     
-    tf.image_summary("images",image_batch)
+    tf.image_summary("cifar10-images",image_batch)
 
     return image_batch,tf.reshape(label_batch,[batch_size])
 
