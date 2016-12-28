@@ -9,6 +9,68 @@ import tensorflow as tf
 import argparse
 
 import os
+import sys
+import tarfile
+import re
+import gzip
+
+from six.moves import urllib
+
+import ReadCifar10
+
+FLAGS = tf.app.flags.FLAGS
+
+tf.app.flags.DEFINE_integer('batch_size', 128,
+                            """Number of images to process in a batch.""")
+tf.app.flags.DEFINE_string('data_dir', '/tmp/cifar10_data',
+                           """Path to the CIFAR-10 data directory.""")
+tf.app.flags.DEFINE_boolean('use_fp16', False,
+                            """Train the model using fp16.""")
+
+IMAGE_SIZE ReadCifar10.IMAGE_SIZE
+NUM_CLASSES = ReadCifar10.NUM_ClASSES
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+
+DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
+
+TOWER_NAME = 'tower'
+
+def _activation_summary(x):
+    """
+    """
+    tensor_name = re.sub('%s_[0-9]*/' %TOWER_NAME,'',x.op.name)
+    tf.histogram_summary(tensor_name + '/activations',x)
+    tf.scalar_summary(tensor_name + '/sparsity')
+
+def _variable_on_cpu(name,shape,initializer):
+    with tf.device('/cpu:0'):
+        dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+        var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
+    return var
+
+def distorted_inputs():
+    if not FLAGS.data_dir:
+        raise ValueError('Please supply a data_dir')
+    data_dir = os.path.join(FLAGS.data_dir,'cifar-10-batches-bin')
+    images,labels = ReadCifar10.distorted_inputs(data_dir=data_dir,
+                                                 batch_size=FLAGS.batch_size)
+    if FLAGS.use_fp16:
+        images = tf.cast(images,tf.float16)
+        labels = tf.cast(labels,tf.float16)
+    return images,labels
+
+def inputs(eval_data):
+    if not FLAGS.data_dir:
+        raise ValueError('Please supply a data_dir')
+    data_dir = os.path.join(FLAGS.data_dir,'cifar-10-batches-bin')
+    images,labels = ReadCifar10.inputs(eval_data=eval_data
+                                       data_dir=data_dir,
+                                       batch_size=FLAGS.batch_size)
+    if FLAGS.use_fp16:
+        images = tf.cast(images,tf.float16)
+        labels = tf.cast(labels,tf.float16)
+    return images,labels
 
 with tf.name_scope("input"):
     x = tf.placeholder(tf.float32, [None, 1024])
