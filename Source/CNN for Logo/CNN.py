@@ -49,6 +49,18 @@ def _variable_on_cpu(name,shape,initializer):
         var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
     return var
 
+def _variable_with_weight_decay(name,shape,sttdev,wd):
+    dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+    var = _variable_on_cpu(
+        name,
+        shape,
+        tf.truncated_normal_initializer(stddev=stddev,dtype=dtype)
+    )
+    if wd is not None:
+        weigth_decay = tf.mul(tf.nn.l2_loss(var),wd,name='weight_loss')
+        tf.add_to_collection('losses',weigth_decay)
+    return var
+
 def distorted_inputs():
     if not FLAGS.data_dir:
         raise ValueError('Please supply a data_dir')
@@ -85,20 +97,19 @@ def cnn_model(input_images):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def conv2d(x,W):
-        return tf.nn.conv2d(x,W,strides=[1,1,1,1],padding='SAME')
+    def conv2d(images,kernel):
+        return tf.nn.conv2d(images,kernel,strides=[1,1,1,1],padding='SAME')
 
     def max_pool_2x2(x):
         return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
 
-    
-
-    with tf.name_scope("images"):
-        x_image = tf.reshape(x, [-1,32,32,1])
-        tf.image_summary('input',x_image,25)
-
-    with tf.name_scope("conv1"):
-        W_conv1 = weight_variable([5, 5, 1, 8])
+    with tf._variable_scope("conv1") as scope:
+        kernel = _variable_with_weight_decay(
+            'weights',
+            shape = [5,5,3,8],
+            stddev=5e-2,
+            wd=0.0
+        )
         b_conv1 = bias_variable([8])
         h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
         h_pool1 = max_pool_2x2(h_conv1)
