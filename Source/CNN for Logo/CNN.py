@@ -103,7 +103,7 @@ def cnn_model(input_images):
     def max_pool_2x2(x,name):
         return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME',name=name)
 
-    with tf._variable_scope('conv1') as scope:
+    with tf.variable_scope('conv1') as scope:
         kernel = _variable_with_weight_decay(
             'weights',
             shape = [5,5,3,24],
@@ -118,7 +118,7 @@ def cnn_model(input_images):
 
     pool1 = max_pool_2x2(conv1,'pool1')
 
-    with tf._variable_scope('conv2') as scope:
+    with tf.variable_scope('conv2') as scope:
         kernel = _variable_with_weight_decay(
             'weights',
             shape = [3,3,24,36],
@@ -133,7 +133,7 @@ def cnn_model(input_images):
 
     pool2 = max_pool_2x2(conv2,'pool2')
 
-    with tf._variable_scope('conv3') as scope:
+    with tf.variable_scope('conv3') as scope:
         kernel = _variable_with_weight_decay(
             'weights',
             shape = [3,3,36,48],
@@ -147,6 +147,11 @@ def cnn_model(input_images):
         _activation_summary(conv3)
 
     pool3 = max_pool_2x2(conv3,'pool3')
+
+    with tf.variable_scope('fc1') as scope:
+        reshape = tf.reshape(pool3,[FLAGS.batch_size,-1])
+        dim = reshape.get_shape()[1].value
+        
 
     with tf.name_scope("fc1"):
         W_fc1 = weight_variable([2*2*16,512])
