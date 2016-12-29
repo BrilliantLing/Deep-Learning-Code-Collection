@@ -100,31 +100,53 @@ def cnn_model(input_images):
     def conv2d(images,kernel):
         return tf.nn.conv2d(images,kernel,strides=[1,1,1,1],padding='SAME')
 
-    def max_pool_2x2(x):
-        return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
+    def max_pool_2x2(x,name):
+        return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME',name=name)
 
-    with tf._variable_scope("conv1") as scope:
+    with tf._variable_scope('conv1') as scope:
         kernel = _variable_with_weight_decay(
             'weights',
-            shape = [5,5,3,8],
+            shape = [5,5,3,24],
             stddev=5e-2,
             wd=0.0
         )
-        b_conv1 = bias_variable([8])
-        h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
-        h_pool1 = max_pool_2x2(h_conv1)
+        conv = tf.nn.conv2d(input_images,kernel,[1,1,1,1],padding='SAME')
+        biases = _variable_on_cpu('biases', [24], tf.constant_initializer(0.0))
+        pre_activation = tf.nn.bias_add(conv,biases)
+        conv1 = tf.nn.relu(pre_activation,name=scope.name)
+        _activation_summary(conv1)
 
-    with tf.name_scope("conv2"):
-        W_conv2 = weight_variable([3, 3, 8, 12])
-        b_conv2 = bias_variable([12])
-        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-        h_pool2 = max_pool_2x2(h_conv2)
+    pool1 = max_pool_2x2(conv1,'pool1')
 
-    with tf.name_scope("conv3"):
-        W_conv3 = weight_variable([3, 3, 12, 16])
-        b_conv3 = bias_variable([16])
-        h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3)
-        h_pool3 = max_pool_2x2(h_conv3)
+    with tf._variable_scope('conv2') as scope:
+        kernel = _variable_with_weight_decay(
+            'weights',
+            shape = [3,3,24,36],
+            stddev=5e-2
+            wd=0.0
+        )
+        conv = tf.nn.conv2d(pool1,kernel,[1,1,1,1],padding='SAME')
+        biases = _variable_on_cpu('biases',[36],tf.constant_initializer(0.1))
+        pre_activation = tf.nn.bias_add(conv,biases)
+        conv2 = tf.nn.relu(pre_activation,name=scope.name)
+        _activation_summary(conv2)
+
+    pool2 = max_pool_2x2(conv2,'pool2')
+
+    with tf._variable_scope('conv3') as scope:
+        kernel = _variable_with_weight_decay(
+            'weights',
+            shape = [3,3,36,48],
+            stddev = 5e-2,
+            wd=0.0
+        )
+        conv = tf.nn.conv2d(pool2,kernel,[1,1,1,1],padding='SAME')
+        biases = _variable_on_cpu('biases',[48],tf.constant_initializer(0.1))
+        pre_activation = tf.nn.bias_add(conv,biases)
+        conv3 = tf.nn.relu(pre_activation,name=scope.name)
+        _activation_summary(conv3)
+
+    pool3 = max_pool_2x2(conv3,'pool3')
 
     with tf.name_scope("fc1"):
         W_fc1 = weight_variable([2*2*16,512])
