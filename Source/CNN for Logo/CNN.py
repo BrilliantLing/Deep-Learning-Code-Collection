@@ -149,24 +149,40 @@ def cnn_model(input_images):
     pool3 = max_pool_2x2(conv3,'pool3')
 
     with tf.variable_scope('fc1') as scope:
-        reshape = tf.reshape(pool3,[FLAGS.batch_size,-1])
-        dim = reshape.get_shape()[1].value
-        
+        reshape = tf.reshape(pool3,[9*48,-1])
+        weights = _variable_with_weight_decay(
+            'weights',
+            shape = [9*48,384]
+            stddev = 0.04,
+            wd=0.004
+        )
+        biases = _variable_on_cpu('biases',[384],tf.constant_initializer(0.1))
+        fc1 = tf.nn.relu(tf.matmul(reshape,weights)+biases,name=scope.name)
+        _activation_summary(fc1)
 
-    with tf.name_scope("fc1"):
-        W_fc1 = weight_variable([2*2*16,512])
-        b_fc1 = bias_variable([512])
-        h_pool3_flat = tf.reshape([h_pool3,2*2*16])
-        h_fc1 = tf.matmul(h_pool2_flat, W_fc1) + b_fc1
-        keep_prob = tf.placeholder("float")
-        h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+    with tf.variable_scope('fc2') as scope:
+        weights = _variable_on_cpu(
+            'weights',
+            shape=[384,384],
+            stddev = 0.04,
+            wd=0.04
+        )
+        biases = _variable_on_cpu('biases',[384],tf.constant_initializer(0.1))
+        fc2 = tf.nn.relu(tf.matmul(fc1,weights)+biases,name=scope.name)
+        _activation_summary(fc2)
 
-    with tf.name_scope("fc2"):
-        W_fc2 = weight_variable([512,10])
-        b_fc2 = bias_variable([10])
-        lh_fc2 = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+    with tf.variable_scope('softmax_linear') as scope:
+        weights = _variable_with_weight_decay(
+            'weights',
+            [384,NUM_CLASSES],
+            stddev=1/384.0,
+            wd=0.0
+        )
+        biases = _variable_on_cpu('biases',[NUM_CLASSES],tf.constant_initializer(0.0))
+        softmax_linear =tf.add(tf.matmul(fc2,weights),biases,name=scope.name)
+        _activation_summary(softmax_linear)
 
-    return lh_fc2
+    return softmax_linear
 
 def train(inputs,labels,sess,target):    
     with tf.name_scope("model_output"):
