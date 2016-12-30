@@ -32,6 +32,11 @@ NUM_CLASSES = ReadCifar10.NUM_ClASSES
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 
+MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
+NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
+LEARNING_RATE_DECAY_FACTOR = 0.1  # Learning rate decay factor.
+INITIAL_LEARNING_RATE = 0.1   
+
 DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
 
 TOWER_NAME = 'tower'
@@ -184,21 +189,79 @@ def cnn_model(input_images):
 
     return softmax_linear
 
-def train(inputs,labels,sess,target):    
-    with tf.name_scope("model_output"):
-        model_output = cnn_model(inputs)
+def loss(logits,labels):
+    labels = tf.cast(labels,tf.int64)
+    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+        logits,labels,name='cross_entropy_per_example'
+    )
+    cross_entropy_mean = tf.reduce_mean(cross_entropy,name='cross_entropy')
+    tf.add_to_collection('losses',cross_entropy_mean)
+    return tf.add_n(tf.get_collection('losses',name='total_loss'))
 
-    with tf.name_scope("cost"):
-        cost=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(model_output, labels))
+def _add_loss_summaries(total_loss):
+    loss_average = tf.train.ExponentialMovingAverage(0.9,name='avg')
+    losses = tf.get_collection('losses')
+    loss_averages_op = loss_average.apply(losses+[total_loss])
+    for l in losses + [total_loss]:
+        tf.scalar_summary(l.op.name + '(raw)',a)
+        tf.scalar_summary(l.op.name,loss_average(l))
 
-    with tf.name_scope("train_step"):
-        trian_step = train_step = tf.train.AdamOptimizer(1e-4).minimize(cost)
+    return loss_averages_op
 
-    with tf.name_scoep("prediction"):
-        prediction = tf.argmax(model_output, 1)
-        correct_prediction = tf.equal(tf.argmax(model_output,1), tf.argmax(labels,1))
+def train(total_loss,global_step,decay=False):
+    if decay is True:
+        num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / FLAGS.batch_size
+        decay_step = int(num_batches_per_epoch*NUM_EPOCHS_PER_DECAY)
 
-    with tf.name_scope("accuracy"):
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        lr = tf.train.exponential_decay(
+            INITIAL_LEARNING_RATE,
+            global_step,
+            decay_step,
+            LEARNING_RATE_DECAY_FACTOR,
+            staircase=True
+        )
+        tf.scalar_summary('learning_rate',lr)
 
-     sess.run(tf.global_variables_initializer())
+        loss_averages_op = _add_loss_summaries(total_loss)
+
+        with tf.control_dependencies([loss_averages_op]):
+            opt = tf.train.GradientDescentOptimizer(lr)
+            grads = opt.compute_gradients(total_loss)
+
+        apply_gradient_op = opt.apply_gradients(grads,global_step=global_step)
+
+        for var in tf.trainable_variables():
+            tf.histogram_summary(var.op.name,var)
+
+        for grad,var in grads:
+            if grad is not None:
+                tf.histogram_summary(var.op.name + '/gradients',grad)
+        
+        variable_averages = tf.train.ExponentialMovingAverage(
+            MOVING_AVERAGE_DECAY,
+            global_step
+        )
+        variables_averages_op = variable_averages.apply(tf.trainable_variables())
+
+        with tf.control_dependencies([apply_gradient_op,variables_averages_op]):
+            train_op = tf.no_op(name='train')
+        
+    return train_op
+
+
+def maybe_download_and_extract():
+    dest_dirtory = FLAGS.data_dir
+    if not os.path.exists(dest_dirtory):
+        os.makedirs(dest_dirtory)
+    filename = DATA_URL.split('/')[-1]
+    filepath = os.path.join(dest_dirtory,filename)
+    if not os.path.exists(filepath):
+        def _progress(count,block_size,total_size):
+            sys.stdout.write('\r>> Downloading %s %.1f%%' %(filename,float(count*block_size)/float(total_size)*100))
+            sys.stdout.flush()
+        filepath,_=urllib.request.urlretrieve(DATA_URL,filepath,_progress)
+        print()
+        statinfo = os.stat(filepath)
+        print('Successfully downloaded',filename,statinfo.st_size,'bytes.')
+    
+    tarfile.open(filepath,'r:gz').extractall(dest_dirtory)
