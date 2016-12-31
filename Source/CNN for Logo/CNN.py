@@ -203,8 +203,8 @@ def _add_loss_summaries(total_loss):
     losses = tf.get_collection('losses')
     loss_averages_op = loss_average.apply(losses+[total_loss])
     for l in losses + [total_loss]:
-        tf.scalar_summary(l.op.name + '(raw)',1)
-        tf.scalar_summary(l.op.name,loss_average(l))
+        tf.scalar_summary(l.op.name + ' (raw)',1)
+        tf.scalar_summary(l.op.name,loss_average.average(l))
 
     return loss_averages_op
 
