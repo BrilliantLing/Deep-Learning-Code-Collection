@@ -154,10 +154,10 @@ def cnn_model(input_images):
     pool3 = max_pool_2x2(conv3,'pool3')
 
     with tf.variable_scope('fc1') as scope:
-        reshape = tf.reshape(pool3,[9*48,-1])
+        reshape = tf.reshape(pool3,[9*48*128,-1])
         weights = _variable_with_weight_decay(
             'weights',
-            shape = [9*48,384],
+            shape = [9*48*128,384],
             stddev = 0.04,
             wd=0.004
         )
