@@ -245,8 +245,7 @@ def train(total_loss,global_step,decay=False):
 
         with tf.control_dependencies([apply_gradient_op,variables_averages_op]):
             train_op = tf.no_op(name='train')
-        
-    return train_op
+        return train_op
 
 
 def maybe_download_and_extract():
