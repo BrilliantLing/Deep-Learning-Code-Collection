@@ -29,7 +29,7 @@ def train():
         images,labels = CNN.distorted_inputs()
         logits = CNN.cnn_model(images,labels)
         loss = CNN.train(logits,labels)
-        train_op = CNN.train(loss,global_step)
+        train_op = CNN.train(loss,global_step,True)
 
         saver = tf.train.Saver(tf.all_variables())
         summary_op = tf.merge_all_summaries()

@@ -157,7 +157,7 @@ def cnn_model(input_images):
         reshape = tf.reshape(pool3,[9*48,-1])
         weights = _variable_with_weight_decay(
             'weights',
-            shape = [9*48,384]
+            shape = [9*48,384],
             stddev = 0.04,
             wd=0.004
         )
