@@ -127,7 +127,7 @@ def cnn_model(input_images):
         kernel = _variable_with_weight_decay(
             'weights',
             shape = [3,3,24,36],
-            stddev=5e-2
+            stddev=5e-2,
             wd=0.0
         )
         conv = tf.nn.conv2d(pool1,kernel,[1,1,1,1],padding='SAME')
