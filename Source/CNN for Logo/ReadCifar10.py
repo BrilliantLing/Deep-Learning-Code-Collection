@@ -37,7 +37,7 @@ def read_cifar10(filename_queue):
     result.height = 32
     result.weight = 32
     result.depth = 3
-    image_bytes = result.height * result.weigth * result.depth
+    image_bytes = result.height * result.weight * result.depth
     record_bytes = label_bytes +image_bytes
 
     #使用定长记录阅读器读取cifar数据集文件的图像
