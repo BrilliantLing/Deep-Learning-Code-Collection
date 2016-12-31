@@ -199,12 +199,12 @@ def loss(logits,labels):
     return tf.add_n(tf.get_collection('losses'),name='total_loss')
 
 def _add_loss_summaries(total_loss):
-    loss_average = tf.train.ExponentialMovingAverage(0.9,name='avg')
+    loss_averages = tf.train.ExponentialMovingAverage(0.9,name='avg')
     losses = tf.get_collection('losses')
-    loss_averages_op = loss_average.apply(losses+[total_loss])
+    loss_averages_op = loss_averages.apply(losses+[total_loss])
     for l in losses + [total_loss]:
         tf.scalar_summary(l.op.name + ' (raw)',1)
-        tf.scalar_summary(l.op.name,loss_average.average(l))
+        tf.scalar_summary(l.op.name,loss_averages.average(l))
 
     return loss_averages_op
 
