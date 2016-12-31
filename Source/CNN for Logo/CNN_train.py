@@ -67,10 +67,10 @@ def train():
                 saver.save(sess,checkpoint_path,global_step=step)
         
 def main(argv=None):
-    CNN.maybe_download_and_extract()
-    if tf.gfile.Exists(FLAGS.train_dir):
-        tf.gfile.DeleteRecursively(FLAGS.train_dir)
-    tf.gfile.MakeDirs(FLAGS.train_dir)
+    #CNN.maybe_download_and_extract()
+    #if tf.gfile.Exists(FLAGS.train_dir):
+    #    tf.gfile.DeleteRecursively(FLAGS.train_dir)
+    #tf.gfile.MakeDirs(FLAGS.train_dir)
     train()
 
 if __name__ == '__main__':
