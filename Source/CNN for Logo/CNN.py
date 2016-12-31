@@ -46,7 +46,7 @@ def _activation_summary(x):
     """
     tensor_name = re.sub('%s_[0-9]*/' %TOWER_NAME,'',x.op.name)
     tf.histogram_summary(tensor_name + '/activations',x)
-    tf.scalar_summary(tensor_name + '/sparsity')
+    tf.scalar_summary(tensor_name + '/sparsity',tf.nn.zero_fraction(x))
 
 def _variable_on_cpu(name,shape,initializer):
     with tf.device('/cpu:0'):
