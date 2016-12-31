@@ -27,7 +27,7 @@ tf.app.flags.DEFINE_string('data_dir', '/media/storage/Data/cifar10_data',
 tf.app.flags.DEFINE_boolean('use_fp16', False,
                             """Train the model using fp16.""")
 
-IMAGE_SIZE ReadCifar10.IMAGE_SIZE
+IMAGE_SIZE = ReadCifar10.IMAGE_SIZE
 NUM_CLASSES = ReadCifar10.NUM_ClASSES
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
