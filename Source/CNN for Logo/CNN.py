@@ -196,7 +196,7 @@ def loss(logits,labels):
     )
     cross_entropy_mean = tf.reduce_mean(cross_entropy,name='cross_entropy')
     tf.add_to_collection('losses',cross_entropy_mean)
-    return tf.add_n(tf.get_collection('losses',name='total_loss'))
+    return tf.add_n(tf.get_collection('losses'),name='total_loss')
 
 def _add_loss_summaries(total_loss):
     loss_average = tf.train.ExponentialMovingAverage(0.9,name='avg')
