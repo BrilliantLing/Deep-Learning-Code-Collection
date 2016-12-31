@@ -101,7 +101,7 @@ def distorted_inputs(data_dir,batch_size):
         image_batch:图片batch。4D Tensor[batch_size,IMAGE_SIZE,IMAGE_SIZE,3]
         label_batch:标签batch。1D Tensor[batch_size]
     """
-    filenames = [os.path.join(data_dir,'data_batch_%d' %i)
+    filenames = [os.path.join(data_dir,'data_batch_%d.bin' %i)
                  for i in xrange(1,6)]
     #filenames.append(os.path.join(data_dir,'test_batch'))
 
@@ -156,7 +156,7 @@ def inputs(eval_data,data_dir,batch_size):
         label_batch:标签batch。1D Tensor[batch_size]
     """
     if not eval_data:
-        filenames = [os.path.join(data_dir,'data_batch_%d' %i)
+        filenames = [os.path.join(data_dir,'data_batch_%d.bin' %i)
                  for i in xange(1,6)]
         #filenames.append(os.path.join(data_dir,'test_batch'))
         num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
