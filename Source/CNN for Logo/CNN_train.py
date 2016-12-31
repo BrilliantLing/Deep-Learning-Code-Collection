@@ -27,7 +27,7 @@ def train():
         global_step = tf.Variable(0,trainable=False)
 
         images,labels = CNN.distorted_inputs()
-        logits = CNN.cnn_model(images,labels)
+        logits = CNN.cnn_model(images)
         loss = CNN.train(logits,labels)
         train_op = CNN.train(loss,global_step,True)
 
