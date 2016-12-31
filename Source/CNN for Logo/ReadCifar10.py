@@ -102,7 +102,7 @@ def distorted_inputs(data_dir,batch_size):
         label_batch:标签batch。1D Tensor[batch_size]
     """
     filenames = [os.path.join(data_dir,'data_batch_%d' %i)
-                 for i in xange(1,6)]
+                 for i in xrange(1,6)]
     #filenames.append(os.path.join(data_dir,'test_batch'))
 
     for f in filenames:
