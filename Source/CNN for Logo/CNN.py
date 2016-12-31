@@ -54,7 +54,7 @@ def _variable_on_cpu(name,shape,initializer):
         var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
     return var
 
-def _variable_with_weight_decay(name,shape,sttdev,wd):
+def _variable_with_weight_decay(name,shape,stddev,wd):
     dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
     var = _variable_on_cpu(
         name,
