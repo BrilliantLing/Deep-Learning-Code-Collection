@@ -166,7 +166,7 @@ def cnn_model(input_images):
         _activation_summary(fc1)
 
     with tf.variable_scope('fc2') as scope:
-        weights = _variable_on_cpu(
+        weights = _variable_with_weight_decay(
             'weights',
             shape=[384,384],
             stddev = 0.04,
