@@ -183,4 +183,4 @@ def inputs(eval_data,data_dir,batch_size):
     min_fraction_of_examples_in_queue=0.4
     min_queue_examples = int(num_examples_per_epoch * min_fraction_of_examples_in_queue)
 
-    return _generate_image_and_label_batch(float_image,read_input,label,min_queue_examples,batch_size,shuffle=False)
+    return _generate_image_and_label_batch(float_image,read_input.label,min_queue_examples,batch_size,shuffle=False)
