@@ -71,10 +71,15 @@ def train():
 
     # Calculate loss.
     loss = cifar10.loss(logits, labels)
+    print(logits.get_shape())
+    print(labels.get_shape())
 
+    """
     # Build a Graph that trains the model with one batch of examples and
     # updates the model parameters.
     train_op = cifar10.train(loss, global_step)
+
+
 
     # Create a saver.
     saver = tf.train.Saver(tf.all_variables())
@@ -120,6 +125,7 @@ def train():
       if step % 1000 == 0 or (step + 1) == FLAGS.max_steps:
         checkpoint_path = os.path.join(FLAGS.train_dir, 'model.ckpt')
         saver.save(sess, checkpoint_path, global_step=step)
+      """
 
 
 def main(argv=None):  # pylint: disable=unused-argument
