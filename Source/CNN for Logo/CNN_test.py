@@ -30,7 +30,7 @@ tf.app.flags.DEFINE_boolean('run_once', False,
 
 def eval_once(saver,summary_writer,top_k_op,summary_op):
     with tf.Session() as sess:
-        ckpt = tf.train.get_checkpoint_state(FLAG.checkpoint_dir)
+        ckpt = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(sess,ckpt.model_checkpoint_path)
             global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
@@ -44,9 +44,9 @@ def eval_once(saver,summary_writer,top_k_op,summary_op):
             for qr in tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS):
                 threads.extend(qr.create_threads(sess,coord=coord,daemon=Ture,start=True))
 
-            num_iter = int(math.ceil(FLAG.num_examples / FLAG.batch_size))
+            num_iter = int(math.ceil(FLAGS.num_examples / FLAGS.batch_size))
             true_count = 0
-            total_sample_count = num_iter * FLAG.batch_size
+            total_sample_count = num_iter * FLAGS.batch_size
             step = 0
             while step < num_iter and not coord.should_stop():
                 predictions = sess.run([top_k_op])
@@ -68,7 +68,7 @@ def eval_once(saver,summary_writer,top_k_op,summary_op):
 
 def evaluate():
     with tf.Graph().as_default() as g:
-        eval_data = FLAG.eval_data == 'test'
+        eval_data = FLAGS.eval_data == 'test'
         images,labels = CNN.inputs(eval_data=eval_data)
 
         logits = CNN.cnn_model(images)
@@ -82,11 +82,11 @@ def evaluate():
 
         summary_op = tf.merge_all_summaries()
 
-        summary_writer = tf.train.SummaryWriter(FLAG.eval_dir,g)
+        summary_writer = tf.train.SummaryWriter(FLAGS.eval_dir,g)
 
         while True:
             eval_once(saver,summary_writer,top_k_op,summary_op)
-            if FLAG.run_once:
+            if FLAGS.run_once:
                 break
             time.sleep(FLAGS.eval_interval_secs)
 
