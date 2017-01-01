@@ -42,7 +42,7 @@ def eval_once(saver,summary_writer,top_k_op,summary_op):
         try:
             threads = []
             for qr in tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS):
-                threads.extend(qr.create_threads(sess,coord=coord,daemon=Ture,start=True))
+                threads.extend(qr.create_threads(sess,coord=coord,daemon=True,start=True))
 
             num_iter = int(math.ceil(FLAGS.num_examples / FLAGS.batch_size))
             true_count = 0
