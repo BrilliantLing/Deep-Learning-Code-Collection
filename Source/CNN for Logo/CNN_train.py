@@ -31,7 +31,7 @@ def train():
         print(logits.get_shape())
         print(logits.get_shape())
         print(labels.get_shape())
-        """loss = CNN.loss(logits,labels)
+        loss = CNN.loss(logits,labels)
         train_op = CNN.train(loss,global_step,True)
 
         saver = tf.train.Saver(tf.all_variables())
@@ -68,7 +68,7 @@ def train():
             if step % 1000 == 0 or (step + 1) == FLAGS.max_steps:
                 checkpoint_path = os.path.join(FLAGS.train_dir,'model.ckpt')
                 saver.save(sess,checkpoint_path,global_step=step)
-        """
+        
         
 def main(argv=None):
     #CNN.maybe_download_and_extract()
