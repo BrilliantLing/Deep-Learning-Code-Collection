@@ -54,7 +54,13 @@ def _variable_on_cpu(name,shape,initializer):
         var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
     return var
 
-def _variable_with_weight_decay(name,shape,stddev,wd):
+def _variable_on_gpu(name,shape,initializer):
+    with tf.device('/gpu:0'):
+        dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+        var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
+    return var
+
+def _variable_with_weight_decay(name,shape,stddev,wd,use_gpu=False):
     dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
     var = _variable_on_cpu(
         name,
@@ -88,10 +94,6 @@ def inputs(eval_data):
         images = tf.cast(images,tf.float16)
         labels = tf.cast(labels,tf.float16)
     return images,labels
-
-with tf.name_scope("input"):
-    x = tf.placeholder(tf.float32, [None, 1024])
-    y_ = tf.placeholder(tf.float32, [None, 18])
 
 def cnn_model(input_images):
     def weight_variable(shape):
