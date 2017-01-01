@@ -28,9 +28,9 @@ def train():
 
         images,labels = CNN.distorted_inputs()
         logits = CNN.cnn_model(images)
-        print logtis.get_shape()
-        print logits.get_shape()
-        print labels.get_shape()
+        print(logits.get_shape())
+        print(logits.get_shape())
+        print(labels.get_shape())
         """loss = CNN.loss(logits,labels)
         train_op = CNN.train(loss,global_step,True)
 
