@@ -176,7 +176,7 @@ def inputs(eval_data,data_dir,batch_size):
     height = IMAGE_SIZE
     width = IMAGE_SIZE
 
-    resized_image = tf.image.resize_images(reshaped_image,width,height)
+    resized_image = tf.image.resize_image_with_crop_or_pad(reshaped_image,width,height)
 
     float_image = tf.image.per_image_standardization(resized_image)
 
