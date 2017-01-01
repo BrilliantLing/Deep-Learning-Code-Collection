@@ -198,6 +198,11 @@ def loss(logits,labels):
     tf.add_to_collection('losses',cross_entropy_mean)
     return tf.add_n(tf.get_collection('losses'),name='total_loss')
 
+def cost(logits,labels):
+    labels = tf.cast(labels,tf.int64)
+    cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits,labels,name='cross_entropy'))
+    return cross_entropy_mean
+
 def _add_loss_summaries(total_loss):
     loss_averages = tf.train.ExponentialMovingAverage(0.9,name='avg')
     losses = tf.get_collection('losses')

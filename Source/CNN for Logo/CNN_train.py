@@ -28,7 +28,7 @@ def train():
 
         images,labels = CNN.distorted_inputs()
         logits = CNN.cnn_model(images)
-        loss = CNN.train(logits,labels)
+        loss = CNN.loss(logits,labels)
         train_op = CNN.train(loss,global_step,True)
 
         saver = tf.train.Saver(tf.all_variables())
