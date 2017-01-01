@@ -74,9 +74,9 @@ def evaluate():
         logits = CNN.cnn_model(images)
         top_k_op = tf.nn.in_top_k(logits,labels,1)
 
-        variables_averages = tf.train.ExponentialMovingAverage{
+        variables_averages = tf.train.ExponentialMovingAverage(
             CNN.MOVING_AVERAGE_DECAY
-        }
+        )
         variables_to_restore = variables_averages.variables_to_restore()
         saver = tf.train.Saver(variables_to_restore)
 
