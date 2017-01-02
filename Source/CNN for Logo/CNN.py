@@ -20,7 +20,7 @@ import ReadCifar10
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_integer('batch_size', 128,
+tf.app.flags.DEFINE_integer('batch_size', 100,
                             """Number of images to process in a batch.""")
 tf.app.flags.DEFINE_string('data_dir', '/media/storage/Data/cifar10_data',
                            """Path to the CIFAR-10 data directory.""")
@@ -128,7 +128,7 @@ def cnn_model(input_images):
     with tf.variable_scope('conv2') as scope:
         kernel = _variable_with_weight_decay(
             'weights',
-            shape = [3,3,24,36],
+            shape = [3,3,24,48],
             stddev=5e-2,
             wd=0.0
         )
@@ -143,7 +143,7 @@ def cnn_model(input_images):
     with tf.variable_scope('conv3') as scope:
         kernel = _variable_with_weight_decay(
             'weights',
-            shape = [3,3,36,48],
+            shape = [3,3,48,96],
             stddev = 5e-2,
             wd=0.0
         )
