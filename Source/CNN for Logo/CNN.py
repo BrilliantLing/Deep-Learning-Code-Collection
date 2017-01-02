@@ -60,9 +60,21 @@ def _variable_on_gpu(name,shape,initializer):
         var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
     return var
 
-def _variable_with_weight_decay(name,shape,stddev,wd,use_gpu=False):
+def _variable_with_weight_decay(name,shape,stddev,wd):
     dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
     var = _variable_on_cpu(
+        name,
+        shape,
+        tf.truncated_normal_initializer(stddev=stddev,dtype=dtype)
+    )
+    if wd is not None:
+        weigth_decay = tf.mul(tf.nn.l2_loss(var),wd,name='weight_loss')
+        tf.add_to_collection('losses',weigth_decay)
+    return var
+
+def _variable_with_weight_decay_gpu(name,shape,stddev,wd):
+    dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+    var = _variable_on_gpu(
         name,
         shape,
         tf.truncated_normal_initializer(stddev=stddev,dtype=dtype)
@@ -111,14 +123,14 @@ def cnn_model(input_images):
         return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME',name=name)
 
     with tf.variable_scope('conv1') as scope:
-        kernel = _variable_with_weight_decay(
+        kernel = _variable_with_weight_decay_gpu(
             'weights',
             shape = [5,5,3,24],
             stddev=5e-2,
             wd=0.0
         )
         conv = tf.nn.conv2d(input_images,kernel,[1,1,1,1],padding='SAME')
-        biases = _variable_on_cpu('biases', [24], tf.constant_initializer(0.0))
+        biases = _variable_on_gpu('biases', [24], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv,biases)
         conv1 = tf.nn.relu(pre_activation,name=scope.name)
         _activation_summary(conv1)
@@ -126,14 +138,14 @@ def cnn_model(input_images):
     pool1 = max_pool_2x2(conv1,'pool1')
 
     with tf.variable_scope('conv2') as scope:
-        kernel = _variable_with_weight_decay(
+        kernel = _variable_with_weight_decay_gpu(
             'weights',
             shape = [3,3,24,48],
             stddev=5e-2,
             wd=0.0
         )
         conv = tf.nn.conv2d(pool1,kernel,[1,1,1,1],padding='SAME')
-        biases = _variable_on_cpu('biases',[48],tf.constant_initializer(0.1))
+        biases = _variable_on_gpu('biases',[48],tf.constant_initializer(0.1))
         pre_activation = tf.nn.bias_add(conv,biases)
         conv2 = tf.nn.relu(pre_activation,name=scope.name)
         _activation_summary(conv2)
@@ -141,14 +153,14 @@ def cnn_model(input_images):
     pool2 = max_pool_2x2(conv2,'pool2')
 
     with tf.variable_scope('conv3') as scope:
-        kernel = _variable_with_weight_decay(
+        kernel = _variable_with_weight_decay_gpu(
             'weights',
             shape = [3,3,48,96],
             stddev = 5e-2,
             wd=0.0
         )
         conv = tf.nn.conv2d(pool2,kernel,[1,1,1,1],padding='SAME')
-        biases = _variable_on_cpu('biases',[96],tf.constant_initializer(0.1))
+        biases = _variable_on_gpu('biases',[96],tf.constant_initializer(0.1))
         pre_activation = tf.nn.bias_add(conv,biases)
         conv3 = tf.nn.relu(pre_activation,name=scope.name)
         _activation_summary(conv3)
@@ -158,24 +170,24 @@ def cnn_model(input_images):
     with tf.variable_scope('fc1') as scope:
         reshape = tf.reshape(pool3,[FLAGS.batch_size,-1])
         dim = reshape.get_shape()[1].value
-        weights = _variable_with_weight_decay(
+        weights = _variable_with_weight_decay_gpu(
             'weights',
             shape = [dim,384],
             stddev = 0.04,
             wd=0.004
         )
-        biases = _variable_on_cpu('biases',[384],tf.constant_initializer(0.1))
+        biases = _variable_on_gpu('biases',[384],tf.constant_initializer(0.1))
         fc1 = tf.nn.relu(tf.matmul(reshape,weights)+biases,name=scope.name)
         _activation_summary(fc1)
 
     with tf.variable_scope('fc2') as scope:
-        weights = _variable_with_weight_decay(
+        weights = _variable_with_weight_decay_gpu(
             'weights',
             shape=[384,384],
             stddev = 0.04,
             wd=0.04
         )
-        biases = _variable_on_cpu('biases',[384],tf.constant_initializer(0.1))
+        biases = _variable_on_gpu('biases',[384],tf.constant_initializer(0.1))
         fc2 = tf.nn.relu(tf.matmul(fc1,weights)+biases,name=scope.name)
         _activation_summary(fc2)
 
@@ -186,7 +198,7 @@ def cnn_model(input_images):
             stddev=1/384.0,
             wd=0.0
         )
-        biases = _variable_on_cpu('biases',[NUM_CLASSES],tf.constant_initializer(0.0))
+        biases = _variable_on_gpu('biases',[NUM_CLASSES],tf.constant_initializer(0.0))
         softmax_linear =tf.add(tf.matmul(fc2,weights),biases,name=scope.name)
         _activation_summary(softmax_linear)
 
