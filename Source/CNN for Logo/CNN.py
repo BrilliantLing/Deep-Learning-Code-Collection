@@ -107,7 +107,7 @@ def inputs(eval_data):
         labels = tf.cast(labels,tf.float16)
     return images,labels
 
-def cnn_model(input_images):
+def cnn_model(input_images,conv1=24,conv2=48,conv3=96,fc1=384,fc2=192):
     def weight_variable(shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
         return tf.Variable(initial)
