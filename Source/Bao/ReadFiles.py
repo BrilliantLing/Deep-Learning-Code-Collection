@@ -6,12 +6,12 @@ cwd = os.getcwd()
 
 def create_record():
     writer = tf.python_io.TFRecordWriter("train.tfrecords")
-    for index, name in os.lsitdir(cwd):
+    for index, name in enumerate(('0','1','2','3'):
         class_path = cwd + name + "/"
         for img_name in os.listdir(class_path):
             img_path = class_path + img_name
             img = Image.open(img_path)
-            img = img.resize((224,224))
+            img = img.resize((58,58))
             img_raw = img.tobytes()
             example = tf.train.Feature(feature=tf.train.Features(feature={
                 "label":tf.train.Feature(int64_list = tf.train.Int64List(value=[index])),
