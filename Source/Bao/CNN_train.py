@@ -12,6 +12,8 @@ import numpy as np
 from six.moves import xrange
 import tensorflow as tf
 
+import ReadFiles
+
 import CNN
 
 FLAGS = tf.app.flags.FLAGS
@@ -27,7 +29,7 @@ tf.app.flags.DEFINE_boolean('log_device_placement', False,
 def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0,trainable=False)
-
+        
         images,labels = CNN.distorted_inputs()
         logits = CNN.cnn_model(images)
         print(logits.get_shape())
