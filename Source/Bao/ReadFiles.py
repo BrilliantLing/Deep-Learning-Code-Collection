@@ -36,25 +36,29 @@ def read_and_decode(filename):
                                        })
 
     img = tf.decode_raw(features['img_raw'],tf.uint8)
-    img = tf.reshape([224,224,3])
-    img = tf.cast(img,tf.float32)*(1./255)-0.5
+    img = tf.reshape([58,58,3])
+    #img = tf.cast(img,tf.float32)*(1./255)-0.5
     label = tf.cast(features['label'],tf.int32)
 
     return img,label
 
-if __name__ == '__main__':
-    img,label = read_and_decode("train.tfrecords")
+def _generate_image_and_label_batch(image,label,min_queue_examples,batch_size,shuffle):
+    num_preprocess_threads = 12
+    if shuffle:
+        image_batch,label_batch = tf.train.shuffle_batch(
+            [image,label],
+            batch_size=batch_size,
+            num_threads=num_preprocess_threads,
+            capacity=min_queue_examples+3*batch_size,
+            min_after_dequeue=min_after_dequeue
+        )
+    else:
+        image_batch,label_batch = tf.train.batch(
+            [image.label],
+            batch_size=batch_size,
+            num_threads=num_preprocess_threads,
+            capacity=min_queue_examples+3*batch_size
+        )
 
-    img_batch, label_batch = tf.train.shuffle_batch([img,label],
-                                                    batch_size=1,
-                                                    capacity=2000,
-                                                    min_after_dequeue=1000)
-    init = tf.initialize_all_variables()
-
-    with tf.Session as sess:
-        sess.run(init)
-
-        threads = tf.train.start_queue_runners(sess=sess)
-        for i in range(3):
-            val, l = sess.run([img_batch,label_batch])
-            print (val.shape,1)
+    tf.image_summary('images',image_batch)
+    return image_batch,tf.reshape(label_batch,[batch_size])
