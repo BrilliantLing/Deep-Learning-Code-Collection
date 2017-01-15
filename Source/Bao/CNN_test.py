@@ -11,6 +11,8 @@ import time
 import numpy as np
 import tensorflow as tf
 
+import ReadFiles
+
 import CNN
 
 FLAGS = tf.app.flags.FLAGS
