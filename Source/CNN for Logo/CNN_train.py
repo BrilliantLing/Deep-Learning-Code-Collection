@@ -16,7 +16,7 @@ import CNN
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('train_dir', '/media/storage/Data/cifar10_train',
+tf.app.flags.DEFINE_string('train_dir', '/home/tuxiang/LingJiawei/cifar10_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 200000,

@@ -22,7 +22,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_integer('batch_size', 100,
                             """Number of images to process in a batch.""")
-tf.app.flags.DEFINE_string('data_dir', '/media/storage/Data/cifar10_data',
+tf.app.flags.DEFINE_string('data_dir', '/home/tuxiang/LingJiawei/cifar10_data',
                            """Path to the CIFAR-10 data directory.""")
 tf.app.flags.DEFINE_boolean('use_fp16', False,
                             """Train the model using fp16.""")
@@ -250,7 +250,7 @@ def train(total_loss,global_step,decay=False):
 
         apply_gradient_op = opt.apply_gradients(grads,global_step=global_step)
 
-        '''for var in tf.trainable_variables():
+        for var in tf.trainable_variables():
             tf.histogram_summary(var.op.name,var)
 
         for grad,var in grads:
@@ -264,9 +264,9 @@ def train(total_loss,global_step,decay=False):
         variables_averages_op = variable_averages.apply(tf.trainable_variables())
 
         with tf.control_dependencies([apply_gradient_op,variables_averages_op]):
-            train_op = tf.no_op(name='train')'''
-        #return train_op
-        return apply_gradient_op
+            train_op = tf.no_op(name='train')
+        return train_op
+        #return apply_gradient_op
 
 
 def maybe_download_and_extract():
