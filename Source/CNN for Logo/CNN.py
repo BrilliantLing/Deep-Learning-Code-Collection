@@ -245,12 +245,12 @@ def train(total_loss,global_step,decay=False):
         loss_averages_op = _add_loss_summaries(total_loss)
 
         with tf.control_dependencies([loss_averages_op]):
-            opt = tf.train.AdamOptimizer(learning_rate=lr)
+            opt = tf.train.AdamOptimizer(lr)
             grads = opt.compute_gradients(total_loss)
 
         apply_gradient_op = opt.apply_gradients(grads,global_step=global_step)
 
-        for var in tf.trainable_variables():
+        '''for var in tf.trainable_variables():
             tf.histogram_summary(var.op.name,var)
 
         for grad,var in grads:
@@ -264,8 +264,9 @@ def train(total_loss,global_step,decay=False):
         variables_averages_op = variable_averages.apply(tf.trainable_variables())
 
         with tf.control_dependencies([apply_gradient_op,variables_averages_op]):
-            train_op = tf.no_op(name='train')
-        return train_op
+            train_op = tf.no_op(name='train')'''
+        #return train_op
+        return apply_gradient_op
 
 
 def maybe_download_and_extract():
