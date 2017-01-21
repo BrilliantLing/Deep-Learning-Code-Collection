@@ -245,7 +245,7 @@ def train(total_loss,global_step,decay=False):
         loss_averages_op = _add_loss_summaries(total_loss)
 
         with tf.control_dependencies([loss_averages_op]):
-            opt = tf.train.AdamOptimizer(lr)
+            opt = tf.train.GradientDescentOptimizer(lr)
             grads = opt.compute_gradients(total_loss)
 
         apply_gradient_op = opt.apply_gradients(grads,global_step=global_step)
