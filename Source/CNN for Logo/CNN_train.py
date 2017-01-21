@@ -56,14 +56,12 @@ def train():
 
             assert not np.isnan(loss_value),'Model diverged with loss = NaN'
 
-            if step % 10 == 0:
+            if step % 100 == 0:
                 num_examples_per_step = FLAGS.batch_size
                 example_per_sec = num_examples_per_step / duration
                 sec_per_batch = float(duration)
                 format_str = ('%s;step %d,loss = %.2f (%.1f example/sec; %.3f sec/batch)')
                 print(format_str %(datetime.now(),step,loss_value,example_per_sec,sec_per_batch))
-
-            if step % 100 == 0:
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str,step)
 
