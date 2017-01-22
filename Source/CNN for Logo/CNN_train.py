@@ -24,15 +24,17 @@ tf.app.flags.DEFINE_integer('max_steps', 200000,
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 
-def train():
+def train(data_augment):
     with tf.Graph().as_default():
         global_step = tf.Variable(0,trainable=False)
-
-        images,labels = CNN.inputs(False)
+        if data_augment is not True:   
+            images,labels = CNN.inputs(False)
+        else:
+            images,labels = CNN.distorted_inputs()
         logits = CNN.cnn_model(images)
-        print(logits.get_shape())
-        print(logits.get_shape())
-        print(labels.get_shape())
+        #print(logits.get_shape())
+        #print(logits.get_shape())
+        #print(labels.get_shape())
         loss = CNN.loss(logits,labels)
         train_op = CNN.train(loss,global_step,True)
 
