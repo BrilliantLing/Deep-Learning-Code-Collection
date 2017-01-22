@@ -28,7 +28,7 @@ def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0,trainable=False)
 
-        images,labels = CNN.distorted_inputs()
+        images,labels = CNN.inputs(False)
         logits = CNN.cnn_model(images)
         print(logits.get_shape())
         print(logits.get_shape())
