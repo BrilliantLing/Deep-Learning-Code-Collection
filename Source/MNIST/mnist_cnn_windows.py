@@ -83,7 +83,7 @@ def main(_):
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     sess.run(tf.initialize_all_variables())
-    for i in range(2000):
+    for i in range(20000):
         batch = mnist.train.next_batch(50)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
@@ -98,7 +98,7 @@ def main(_):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_dir', type=str, default='D:\\mnist_data',
+    parser.add_argument('--data_dir', type=str, default='D:\\Master_Deep_Learning\\data_set\\mnist_data',
                       help='Directory for storing data')
     FLAGS = parser.parse_args()
     tf.app.run()
