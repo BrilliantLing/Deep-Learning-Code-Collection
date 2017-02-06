@@ -16,27 +16,25 @@ import CNN
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('train_dir', '/home/tuxiang/LingJiawei/cifar10_train',
+tf.app.flags.DEFINE_string('train_dir', '/media/storage/Data/cifar10_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
-tf.app.flags.DEFINE_integer('max_steps', 150000,
+tf.app.flags.DEFINE_integer('max_steps', 200000,
                             """Number of batches to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 
-def train(data_augment):
+def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0,trainable=False)
-        if data_augment is not True:   
-            images,labels = CNN.inputs(False)
-        else:
-            images,labels = CNN.distorted_inputs()
+
+        images,labels = CNN.distorted_inputs()
         logits = CNN.cnn_model(images)
-        #print(logits.get_shape())
-        #print(logits.get_shape())
-        #print(labels.get_shape())
+        print(logits.get_shape())
+        print(logits.get_shape())
+        print(labels.get_shape())
         loss = CNN.loss(logits,labels)
-        train_op = CNN.train(loss,global_step,False)
+        train_op = CNN.train(loss,global_step,True)
 
         saver = tf.train.Saver(tf.all_variables())
         summary_op = tf.merge_all_summaries()
@@ -58,12 +56,14 @@ def train(data_augment):
 
             assert not np.isnan(loss_value),'Model diverged with loss = NaN'
 
-            if step % 100 == 0:
+            if step % 10 == 0:
                 num_examples_per_step = FLAGS.batch_size
                 example_per_sec = num_examples_per_step / duration
                 sec_per_batch = float(duration)
                 format_str = ('%s;step %d,loss = %.2f (%.1f example/sec; %.3f sec/batch)')
                 print(format_str %(datetime.now(),step,loss_value,example_per_sec,sec_per_batch))
+
+            if step % 100 == 0:
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str,step)
 
@@ -77,7 +77,7 @@ def main(argv=None):
     #if tf.gfile.Exists(FLAGS.train_dir):
     #    tf.gfile.DeleteRecursively(FLAGS.train_dir)
     #tf.gfile.MakeDirs(FLAGS.train_dir)
-    train(False)
+    train()
 
 if __name__ == '__main__':
     tf.app.run()

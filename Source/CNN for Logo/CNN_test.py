@@ -11,7 +11,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-import CNN
+import cnn
 
 FLAGS = tf.app.flags.FLAGS
 
