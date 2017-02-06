@@ -16,21 +16,21 @@ import gzip
 
 from six.moves import urllib
 
-import ReadCifar10
+import read_cifar10_bin
 
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_integer('batch_size', 128,
                             """Number of images to process in a batch.""")
-tf.app.flags.DEFINE_string('data_dir', '/media/storage/Data/cifar10_data',
+tf.app.flags.DEFINE_string('data_dir', 'D:\\Master_Deep_Learning\\data_set\\cifiar\\cifar10_data',
                            """Path to the CIFAR-10 data directory.""")
 tf.app.flags.DEFINE_boolean('use_fp16', False,
                             """Train the model using fp16.""")
 
-IMAGE_SIZE = ReadCifar10.IMAGE_SIZE
-NUM_CLASSES = ReadCifar10.NUM_ClASSES
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = ReadCifar10.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+IMAGE_SIZE = read_cifar10_bin.IMAGE_SIZE
+NUM_CLASSES = read_cifar10_bin.NUM_ClASSES
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = read_cifar10_bin.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = read_cifar10_bin.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 
 MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
 NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
@@ -76,7 +76,7 @@ def distorted_inputs():
     if not FLAGS.data_dir:
         raise ValueError('Please supply a data_dir')
     data_dir = os.path.join(FLAGS.data_dir,'cifar-10-batches-bin')
-    images,labels = ReadCifar10.distorted_inputs(data_dir=data_dir,
+    images,labels = read_cifar10_bin.distorted_inputs(data_dir=data_dir,
                                                  batch_size=FLAGS.batch_size)
     if FLAGS.use_fp16:
         images = tf.cast(images,tf.float16)
@@ -87,7 +87,7 @@ def inputs(eval_data):
     if not FLAGS.data_dir:
         raise ValueError('Please supply a data_dir')
     data_dir = os.path.join(FLAGS.data_dir,'cifar-10-batches-bin')
-    images,labels = ReadCifar10.inputs(eval_data=eval_data,
+    images,labels = read_cifar10_bin.inputs(eval_data=eval_data,
                                        data_dir=data_dir,
                                        batch_size=FLAGS.batch_size)
     if FLAGS.use_fp16:
