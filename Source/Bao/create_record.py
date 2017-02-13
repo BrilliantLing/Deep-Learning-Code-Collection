@@ -36,4 +36,8 @@ def create_records(data_dir):
 
 logo_data = '/media/storage/Data/traffic_sign_data/'
 
-create_records(logo_data)
+def main():
+    create_records(logo_data)
+
+if __name__ == '__main__':
+    tf.app.run(main=main)
