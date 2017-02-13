@@ -16,7 +16,7 @@ def create_records(data_dir):
         class_path = data_dir + name + '/'
         for image_name in os.listdir(class_path):
             image_path = class_path + image_name
-            image = Image.open(img_path)
+            image = Image.open(image_path)
             image = image.resize((58,58))
             image_raw = image.tobytes()
             example = tf.train.Feature(feature=tf.train.Features(
