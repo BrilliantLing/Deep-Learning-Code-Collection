@@ -25,7 +25,7 @@ def create_records(data_dir):
             image = Image.open(image_path)
             image = image.resize((58,58))
             image_raw = image.tobytes()
-            example = tf.train.Feature(feature=tf.train.Features(
+            example = tf.train.Example(features=tf.train.Features(
                 feature = {
                     'label':_int64_feature(index),
                     'image':_bytes_feature(image_raw)
