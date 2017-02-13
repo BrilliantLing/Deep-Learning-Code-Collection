@@ -13,7 +13,7 @@ def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
 def _bytes_feature(value):
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value])
 
 def create_records(data_dir):
     cwd = os.getcwd()
@@ -26,7 +26,7 @@ def create_records(data_dir):
             image = image.resize((58,58))
             image_raw = image.tobytes()
             example = tf.train.Example(features=tf.train.Features(
-                feature = {
+                feature={
                     'label':_int64_feature(index),
                     'image':_bytes_feature(image_raw)
                 }
