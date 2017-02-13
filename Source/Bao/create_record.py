@@ -22,7 +22,7 @@ def create_records(data_dir):
             example = tf.train.Feature(feature=tf.train.Features(
                 feature = {
                     'label':tf.train.Feature(int64_list=tf.train.Int64List(value=[index])),
-                    'image':tf.train.Feature(bytelist=tf.train.BytesList(value=[image_raw]))
+                    'image':tf.train.Feature(byte_list=tf.train.BytesList(value=[image_raw]))
                 }
             ))
             writer.write(example.SerializeToString())
