@@ -13,7 +13,7 @@ def create_records(data_dir):
     cwd = os.getcwd()
     writer = tf.python_io.TFRecordWriter(cwd+'/logo.tfrecords')
     for index,name in enumerate(('0','1','2','3')):
-        class_path = data_dir + '/' + name + '/'
+        class_path = data_dir + name + '/'
         for image_name in os.listdir(class_path):
             image_path = class_path + image_name
             image = Image.open(img_path)
