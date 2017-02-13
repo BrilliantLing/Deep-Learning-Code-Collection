@@ -30,5 +30,5 @@ def create_records(data_dir):
 
 logo_data = '/media/storage/Data/traffic_sign_data/'
 
-create_record(logo_data)
+create_records(logo_data)
 
