@@ -69,20 +69,20 @@ def create_records(data_dir,test):
     result.key, value = reader.read(filename_queue)
 
     record_bytes = tf.decode_raw(value,tf.uint8)
-    result.label = tf.cast(tf.slice(record_bytes,[0],[label_bytes]),tf.int64)
-    print result.label
+    label = tf.cast(tf.slice(record_bytes,[0],[label_bytes]),tf.int64)
+    print label
     depth_major = tf.reshape(tf.slice(record_bytes,[label_bytes],[image_bytes]),[result.depth,result.height,result.width])
-    result.uint8image = tf.transpose(depth_major,[1,2,0])
+    uint8image = tf.transpose(depth_major,[1,2,0])
     if test is not True:
-        image = distort(result.uint8image)
+        image = distort(uint8image)
     else:
-        image = undistort(result.uint8image)
+        image = undistort(uint8image)
 
     writer = tf.python_io.TFRecordWriter(data_dir+'/cifar10.tfrecords')
 
     example = tf.train.Example(features=tf.train.Features(
         feature={
-            'label':_int64_feature(result.label),
+            'label':_int64_feature(label),
             'image':_float_feature(image)
         }
     ))
