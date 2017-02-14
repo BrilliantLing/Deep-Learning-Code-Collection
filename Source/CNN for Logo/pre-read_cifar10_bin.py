@@ -91,4 +91,4 @@ def main():
     create_records(data_dir,False)
 
 if __name__ == '__main__':
-    tf.app.run(main=main)
+    tf.app.run()
