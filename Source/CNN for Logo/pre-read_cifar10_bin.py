@@ -80,7 +80,7 @@ def create_records(data_dir,test):
 
     example = tf.train.Example(features=tf.train.Features(
         feature={
-            'label':_int32_feature(result.label)
+            'label':_int32_feature(result.label),
             'image':_bytes_feature(image)
         }
     ))
