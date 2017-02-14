@@ -18,8 +18,9 @@ data_dir = '/media/storage/Data/cifar10_data/cifar-10-batches-bin'
 def _int32_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
-def _bytes_feature(value):
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+def _float_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
 
 def distort(image):
     height = IMAGE_SIZE
@@ -32,8 +33,8 @@ def distort(image):
     distorted_image = tf.image.random_brightness(distorted_image,max_delta=63)
     distorted_image = tf.image.random_contrast(distorted_image,lower=0.2,upper=1.8)
     float_image = tf.image.per_image_standardization(distorted_image)
-    byte_image = tf.bitcast(float_image,bytes)
-    return byte_image
+    #byte_image = tf.bitcast(float_image,bytes)
+    return float_image
 
 def undistort(image):
     height = IMAGE_SIZE
@@ -43,8 +44,8 @@ def undistort(image):
 
     resized_image = tf.image.resize_image_with_crop_or_pad(reshaped_image,width,height)
     float_image = tf.image.per_image_standardization(resized_image)
-    byte_image = tf.bitcast(float_image,bytes)
-    return byte_image
+    #byte_image = tf.bitcast(float_image,bytes)
+    return float_image
 
 def create_records(data_dir,test):
     filenames = [os.path.join(data_dir,'data_batch_%d.bin' %i)
@@ -81,7 +82,7 @@ def create_records(data_dir,test):
     example = tf.train.Example(features=tf.train.Features(
         feature={
             'label':_int32_feature(result.label),
-            'image':_bytes_feature(image)
+            'image':_float_feature(image)
         }
     ))
     writer.write(example.SerializeToString())
