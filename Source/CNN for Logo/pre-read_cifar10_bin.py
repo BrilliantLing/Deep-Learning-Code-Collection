@@ -15,7 +15,7 @@ NUM_ClASSES = 10
 
 data_dir = '/media/storage/Data/cifar10_data/cifar-10-batches-bin'
 
-def _int32_feature(value):
+def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
 def _float_feature(value):
@@ -70,6 +70,7 @@ def create_records(data_dir,test):
 
     record_bytes = tf.decode_raw(value,tf.uint8)
     result.label = tf.cast(tf.slice(record_bytes,[0],[label_bytes]),tf.int64)
+    print result.label
     depth_major = tf.reshape(tf.slice(record_bytes,[label_bytes],[image_bytes]),[result.depth,result.height,result.width])
     result.uint8image = tf.transpose(depth_major,[1,2,0])
     if test is not True:
@@ -81,7 +82,7 @@ def create_records(data_dir,test):
 
     example = tf.train.Example(features=tf.train.Features(
         feature={
-            'label':_int32_feature(result.label),
+            'label':_int64_feature(result.label),
             'image':_float_feature(image)
         }
     ))
