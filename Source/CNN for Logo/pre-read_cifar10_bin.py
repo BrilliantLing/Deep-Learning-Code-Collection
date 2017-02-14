@@ -87,7 +87,7 @@ def create_records(data_dir,test):
     writer.write(example.SerializeToString())
     writer.close()
 
-def main():
+def main(_):
     create_records(data_dir,False)
 
 if __name__ == '__main__':
