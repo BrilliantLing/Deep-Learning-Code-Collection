@@ -28,4 +28,6 @@ def read_and_decode(filename):
     return img, label
 
 _,label = read_and_decode('logo.tfrecords')
-tf.Print(label,[label])
+
+sess = tf.Session()
+print(sess.run(label))
