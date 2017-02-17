@@ -28,4 +28,4 @@ def read_and_decode(filename):
     return img, label
 
 _,label = read_and_decode('logo.tfrecords')
-print(label)
+tf.Print(label)
