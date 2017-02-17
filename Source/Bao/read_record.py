@@ -12,7 +12,7 @@ from PIL import Image
 def read_and_decode(filename):
 	#根据文件名生成一个队列
     filename_queue = tf.train.string_input_producer([filename])
-    print filename_queue
+    print(filename_queue)
     exit()
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)   #返回文件名和文件
