@@ -14,9 +14,10 @@ IMAGE_SIZE = 24
 NUM_ClASSES = 10
 
 data_dir = '/media/storage/Data/cifar10_data/cifar-10-batches-bin'
+windows_data_dir = 'D:\\MasterDL\\data_set\\cifiar\\cifar10_data\\cifar-10-batches-bin'
 
 def _int64_feature(value):
-    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+    return tf.train.Feature()
 
 def _float_feature(value):
     return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
@@ -48,6 +49,7 @@ def undistort(image):
     return float_image
 
 def create_records(data_dir,test):
+    #sess = tf.InteractiveSession()
     filenames = [os.path.join(data_dir,'data_batch_%d.bin' %i)
                  for i in xrange(1,6)]
 
@@ -69,8 +71,11 @@ def create_records(data_dir,test):
     result.key, value = reader.read(filename_queue)
 
     record_bytes = tf.decode_raw(value,tf.uint8)
-    label = tf.cast(tf.slice(record_bytes,[0],[label_bytes]),tf.int64)
-    print label
+    label_tensor = tf.cast(tf.slice(record_bytes,[0],[label_bytes]),tf.int64)
+    label = label_tensor.as_numpy_dtype(label_tensor)
+    #label = tf.saturate_cast(label_tensor,tf.int64)
+
+    print(label)
     depth_major = tf.reshape(tf.slice(record_bytes,[label_bytes],[image_bytes]),[result.depth,result.height,result.width])
     uint8image = tf.transpose(depth_major,[1,2,0])
     if test is not True:
@@ -83,14 +88,14 @@ def create_records(data_dir,test):
     example = tf.train.Example(features=tf.train.Features(
         feature={
             'label':_int64_feature(label),
-            'image':_float_feature(image)
+            #'image':_float_feature(image)
         }
     ))
     writer.write(example.SerializeToString())
     writer.close()
 
 def main(_):
-    create_records(data_dir,False)
+    create_records(windows_data_dir,False)
 
 if __name__ == '__main__':
     tf.app.run()

@@ -98,7 +98,7 @@ def main(_):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_dir', type=str, default='D:\\Master_Deep_Learning\\data_set\\mnist_data',
+    parser.add_argument('--data_dir', type=str, default='D:\\MasterDL\\data_set\\mnist_data',
                       help='Directory for storing data')
     FLAGS = parser.parse_args()
     tf.app.run()

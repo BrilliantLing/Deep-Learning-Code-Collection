@@ -26,8 +26,3 @@ def read_and_decode(filename):
     img = tf.cast(img, tf.float32) * (1. / 255) - 0.5
     label = tf.cast(features['label'], tf.int32)
     return img, label
-
-_,label = read_and_decode('logo.tfrecords')
-
-sess = tf.Session()
-print(sess.run(label))
