@@ -41,7 +41,7 @@ def main(_):
     
     with tf.name_scope('input_reshape'):
         x_image = tf.reshape(x, [-1,28,28,1])
-        tf.image_summary('input',x_image)
+        tf.summary.image('input',x_image)
 
     with tf.name_scope('conv_layer1'):
         W_conv1 = weight_variable([5, 5, 1, 32])
