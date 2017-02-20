@@ -156,7 +156,7 @@ def cnn_model(input_images):
             stddev = 0.04,
             wd=0.004
         )
-        biases = _variable_on_gpu('biases',[384],tf.constant_initializer(0.1))
+        biases = _variable_on_gpu('biases',[100],tf.constant_initializer(0.1))
         fc1 = tf.nn.relu(tf.matmul(reshape,weights)+biases,name=scope.name)
         _activation_summary(fc1)
 
