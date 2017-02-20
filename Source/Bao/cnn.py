@@ -83,7 +83,7 @@ def inputs(image,label,batch_size):
     )
     return images,tf.reshape(label_batch,[batch_size])
 
-def cnn_model(input_images,conv1=24,conv2=48,conv3=96,fc1=384,fc2=192):
+def cnn_model(input_images):
     def weight_variable(shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
         return tf.Variable(initial)
@@ -198,6 +198,7 @@ def _add_loss_summaries(total_loss):
 
 def train(total_loss, global_step, batch_size):
     num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batch_size
+    decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
     lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
                                   global_step,
                                   decay_steps,
