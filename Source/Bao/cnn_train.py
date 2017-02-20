@@ -24,17 +24,19 @@ tf.app.flags.DEFINE_integer('batch_size',25,"""Number of examples a batch have""
 tf.app.flags.DEFINE_boolean('log_device_placement', False,"""Whether to log device placement.""")
 
 def train():
+    print(1)
     with tf.Graph().as_default():
+        print(2)
         global_step = tf.Variable(0, trainable=False)
         
         images, labels = read_record.read_and_decode(FLAGS.data_dir+'/logo.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
-
+        print(3)
         logits = cnn.cnn_model(image_batch)
         loss = cnn.loss(logits,label_batch)
-
+        print(4)
         train_op = cnn.train(loss,global_step,batch_size)
-
+        print(5)
         saver = tf.train.Saver(tf.global_variables())
 
         summary = tf.summary.merge_all()
@@ -45,9 +47,9 @@ def train():
             log_device_placement=FLAGS.log_device_placement))
 
         sess.run(init)
-        
+
         tf.train.start_queue_runners(sess=sess)
-        print(1)
+        
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir,sess.graph)
 
         for step in xrange(FLAGS.max_steps):
