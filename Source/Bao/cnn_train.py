@@ -26,17 +26,17 @@ tf.app.flags.DEFINE_boolean('log_device_placement', False,"""Whether to log devi
 def train():
     print(1)
     with tf.Graph().as_default():
-        print(2)
+        #print(2)
         global_step = tf.Variable(0, trainable=False)
         
         images, labels = read_record.read_and_decode(FLAGS.data_dir+'/logo.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
-        print(3)
+        #print(3)
         logits = cnn.cnn_model(image_batch)
         loss = cnn.loss(logits,label_batch)
-        print(4)
+        #print(4)
         train_op = cnn.train(loss,global_step,FLAGS.batch_size)
-        print(5)
+        #print(5)
         saver = tf.train.Saver(tf.global_variables())
 
         summary_op = tf.summary.merge_all()
