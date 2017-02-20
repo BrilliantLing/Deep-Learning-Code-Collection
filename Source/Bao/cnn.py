@@ -18,6 +18,8 @@ import read_record
 
 FLAGS = tf.app.flags.FLAGS
 
+tf.app.flags.DEFINE_boolean('use_fp16', False,"""Train the model using fp16.""")
+
 IMAGE_SIZE = 58
 NUM_CLASSES = 4
 
