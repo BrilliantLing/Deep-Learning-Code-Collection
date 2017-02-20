@@ -45,13 +45,12 @@ def train():
             log_device_placement=FLAGS.log_device_placement))
 
         sess.run(init)
-
+        
         tf.train.start_queue_runners(sess=sess)
-
+        print(1)
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir,sess.graph)
 
         for step in xrange(FLAGS.max_steps):
-            print(1)
             start_time = time.time()
             _, loss_value = sess.run([train_op, loss])
             duration = time.time() - start_time
