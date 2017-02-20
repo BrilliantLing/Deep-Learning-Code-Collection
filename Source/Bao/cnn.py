@@ -17,8 +17,6 @@ from six.moves import urllib
 import read_record
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_integer('batch_size', 10,
-                            """Number of images to process in a batch.""")
 
 IMAGE_SIZE = 58
 NUM_CLASSES = 4
