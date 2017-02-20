@@ -33,7 +33,7 @@ def train():
         logits = cnn.cnn_model(image_batch)
         loss = cnn.loss(logits,label_batch)
 
-        train_op = cnn.train(loss,global_step)
+        train_op = cnn.train(loss,global_step,batch_size)
 
         saver = tf.train.Saver(tf.global_variables())
 
