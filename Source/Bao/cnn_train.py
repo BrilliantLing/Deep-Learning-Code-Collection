@@ -46,6 +46,7 @@ def train():
 
         sess.run(init)
 
+        print 1
         tf.train.start_queue_runners(sess=sess)
 
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir,sess.graph)
