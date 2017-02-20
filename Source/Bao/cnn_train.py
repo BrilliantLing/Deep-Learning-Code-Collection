@@ -68,5 +68,5 @@ def train():
 def main(argv=None):
     train()
 
-if __name__ == '__name__':
+if __name__ == '__main__':
     tf.app.run()
