@@ -30,7 +30,7 @@ tf.app.flags.DEFINE_boolean('log_device_placement', False,
 
 def train():
     with tf.Graph().as_default():
-        global_step = tf.Variable(0,param trainable=False)
+        global_step = tf.Variable(0, trainable=False)
         
         images, labels = read_record.read_and_decode(FLAGS.data_dir+'/logo.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
