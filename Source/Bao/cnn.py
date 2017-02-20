@@ -73,11 +73,13 @@ def _variable_with_weight_decay_gpu(name,shape,stddev,wd):
     return var
 
 def inputs(image,label,batch_size):
+    mqe = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * 0.4)
     images,label_batch = tf.train.shuffle_batch(
         [image, label],
         batch_size=batch_size,
         capacity = 3*batch_size + 32,
-        num_threads = 16
+        min_after_dequeue = mqe,
+        num_threads = 12
     )
     return images,tf.reshape(label_batch,[batch_size])
 
