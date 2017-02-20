@@ -109,7 +109,7 @@ def cnn_model(input_images):
             stddev=5e-2,
             wd=0.0
         )
-        conv = tf.nn.conv2d(input_images,kernel,[1,1,1,1],padding='VALID')
+        conv = tf.nn.conv2d(input_images,kernel,[1,1,1,1],padding='SAME')
         biases = _variable_on_gpu('biases', [24], tf.constant_initializer(0.0))
         pre_activation = tf.nn.bias_add(conv,biases)
         conv1 = tf.nn.relu(pre_activation,name=scope.name)
@@ -124,7 +124,7 @@ def cnn_model(input_images):
             stddev=5e-2,
             wd=0.0
         )
-        conv = tf.nn.conv2d(pool1,kernel,[1,1,1,1],padding='VALID')
+        conv = tf.nn.conv2d(pool1,kernel,[1,1,1,1],padding='SAME')
         biases = _variable_on_gpu('biases',[48],tf.constant_initializer(0.1))
         pre_activation = tf.nn.bias_add(conv,biases)
         conv2 = tf.nn.relu(pre_activation,name=scope.name)
@@ -139,7 +139,7 @@ def cnn_model(input_images):
             stddev = 5e-2,
             wd=0.0
         )
-        conv = tf.nn.conv2d(pool2,kernel,[1,1,1,1],padding='VALID')
+        conv = tf.nn.conv2d(pool2,kernel,[1,1,1,1],padding='SAME')
         biases = _variable_on_gpu('biases',[96],tf.constant_initializer(0.1))
         pre_activation = tf.nn.bias_add(conv,biases)
         conv3 = tf.nn.relu(pre_activation,name=scope.name)
