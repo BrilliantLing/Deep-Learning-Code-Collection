@@ -28,7 +28,7 @@ tf.app.flags.DEFINE_integer('num_examples', 344,
 tf.app.flags.DEFINE_boolean('run_once', False,
                          """Whether to run eval only once.""")
 
-def eval_once(saver, summary_writer, top_k_top, summary_op):
+def eval_once(saver, summary_writer, top_k_op, summary_op):
     with tf.Session() as sess:
         ckpt = tf.train.get_checkpoint_state(FLAGS.checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
