@@ -68,7 +68,7 @@ def eval(saver, summary_writer, top_k_top, summary_op):
         coord.join(threads, stop_grace_period_secs=10)
 
 def evaluate():
-    with tf.Graph().as_default as g:
+    with tf.Graph().as_default() as g:
         eval_data = FLAGS.eval_data == 'test'
         images, labels = read_record.read_and_decode('/media/storage/Data/traffic_sign_data/logo.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
