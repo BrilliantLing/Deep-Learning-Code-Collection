@@ -77,7 +77,7 @@ def evaluate():
 
         top_k_op = tf.nn.in_top_k(logits,label_batch,1)
 
-        variables_averages = tf.train.ExponentialMovingAverage(
+        variable_averages = tf.train.ExponentialMovingAverage(
             cnn.MOVING_AVERAGE_DECAY
         )
         variables_to_restore = variable_averages.variables_to_restore()
