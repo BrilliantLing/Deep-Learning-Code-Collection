@@ -15,9 +15,9 @@ def _int64_feature(value):
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
-def create_records(data_dir,target_dir):
+def create_records(data_dir,target_dir,record_name):
     #cwd = os.getcwd()
-    writer = tf.python_io.TFRecordWriter(target_dir+'logo.tfrecords')
+    writer = tf.python_io.TFRecordWriter(target_dir + record_name)
     for index,name in enumerate(('0','1','2','3')):
         class_path = data_dir + name + '/'
         for image_name in os.listdir(class_path):
@@ -35,9 +35,10 @@ def create_records(data_dir,target_dir):
     writer.close()
 
 logo_data = '/media/storage/Data/traffic_sign_data/'
+test_data = '/media/storage/Data/traffic_sign_data_test/'
 
 def main(_):
-    create_records(logo_data, logo_data)
+    create_records(test_data, test_data, 'test.tfrecords')
 
 if __name__ == '__main__':
     tf.app.run()
