@@ -77,15 +77,23 @@ def _variable_with_weight_decay_gpu(name,shape,stddev,wd):
         tf.add_to_collection('losses',weigth_decay)
     return var
 
-def inputs(image,label,batch_size):
+def inputs(image,label,batch_size,random=True):
     mqe = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * 0.3)
-    images,label_batch = tf.train.shuffle_batch(
-        [image, label],
-        batch_size=batch_size,
-        capacity = 3*batch_size + 64,
-        min_after_dequeue = mqe,
-        num_threads = 12
-    )
+    if random is not True:
+        images, label_batch = tf.train.batch(
+            [image, label],
+            batch_size=batch_size,
+            num_threads=12,
+            capacity=3*batch_size + 64
+        )
+    else:
+        images,label_batch = tf.train.shuffle_batch(
+            [image, label],
+            batch_size=batch_size,
+            capacity = 3*batch_size + 64,
+            min_after_dequeue = mqe,
+            num_threads = 12
+        )
     return images,tf.reshape(label_batch,[batch_size])
 
 def cnn_model(input_images):

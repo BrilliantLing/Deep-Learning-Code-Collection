@@ -72,7 +72,7 @@ def evaluate():
     with tf.Graph().as_default() as g:
         eval_data = FLAGS.eval_data == 'test'
         images, labels = read_record.read_and_decode('/media/storage/Data/traffic_sign_data_test/test.tfrecords')
-        image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
+        image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size,False)
 
         logits = cnn.cnn_model(image_batch)
 
