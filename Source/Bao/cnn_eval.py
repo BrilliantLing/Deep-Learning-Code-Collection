@@ -21,7 +21,7 @@ tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
 tf.app.flags.DEFINE_string('checkpoint_dir', '/media/storage/Data/traffic_sign_train',
                            """Directory where to read model checkpoints.""")
-tf.app.flags.DEFINE_integer('eval_interval_secs', 60 * 5,
+tf.app.flags.DEFINE_integer('eval_interval_secs', 10,
                             """How often to run the eval.""")
 tf.app.flags.DEFINE_integer('num_examples', 100,
                             """Number of examples to run.""")
