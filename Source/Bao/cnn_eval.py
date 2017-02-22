@@ -15,7 +15,7 @@ import read_record
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('eval_dir', '/tmp/cifar10_eval',
+tf.app.flags.DEFINE_string('eval_dir', 'traffic_sign_eval',
                            """Directory where to write event logs.""")
 tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
@@ -23,7 +23,7 @@ tf.app.flags.DEFINE_string('checkpoint_dir', '/media/storage/Data/traffic_sign_t
                            """Directory where to read model checkpoints.""")
 tf.app.flags.DEFINE_integer('eval_interval_secs', 60 * 5,
                             """How often to run the eval.""")
-tf.app.flags.DEFINE_integer('num_examples', 344,
+tf.app.flags.DEFINE_integer('num_examples', 100,
                             """Number of examples to run.""")
 tf.app.flags.DEFINE_boolean('run_once', False,
                          """Whether to run eval only once.""")
@@ -70,7 +70,7 @@ def eval_once(saver, summary_writer, top_k_op, summary_op):
 def evaluate():
     with tf.Graph().as_default() as g:
         eval_data = FLAGS.eval_data == 'test'
-        images, labels = read_record.read_and_decode('/media/storage/Data/traffic_sign_data/logo.tfrecords')
+        images, labels = read_record.read_and_decode('/media/storage/Data/traffic_sign_data_test/test.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
 
         logits = cnn.cnn_model(image_batch)
