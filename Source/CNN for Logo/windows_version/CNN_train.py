@@ -16,7 +16,7 @@ import cnn
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('train_dir', 'D:\\Master_Deep_Learning\\data_set\\cifiar\\cifar10_train',
+tf.app.flags.DEFINE_string('train_dir', 'D:\\MasterDL\\data_set\\cifiar\\cifar10_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 200000,
@@ -37,7 +37,7 @@ def train():
         train_op = cnn.train(loss,global_step,True)
 
         saver = tf.train.Saver(tf.all_variables())
-        summary_op = tf.merge_all_summaries()
+        summary_op = tf.summary.merge_all()
         init = tf.global_variables_initializer()
 
         sess = tf.Session(
@@ -47,7 +47,7 @@ def train():
 
         tf.train.start_queue_runners(sess=sess)
 
-        summary_writer = tf.train.SummaryWriter(FLAGS.train_dir,sess.graph)
+        summary_writer = tf.summary.FileWriter(FLAGS.train_dir,sess.graph)
 
         for step in xrange(FLAGS.max_steps):
             start_time = time.time()

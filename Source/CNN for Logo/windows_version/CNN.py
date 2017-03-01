@@ -22,7 +22,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_integer('batch_size', 128,
                             """Number of images to process in a batch.""")
-tf.app.flags.DEFINE_string('data_dir', 'D:\\Master_Deep_Learning\\data_set\\cifiar\\cifar10_data',
+tf.app.flags.DEFINE_string('data_dir', 'D:\\MasterDL\\data_set\\cifiar\\cifar10_data',
                            """Path to the CIFAR-10 data directory.""")
 tf.app.flags.DEFINE_boolean('use_fp16', False,
                             """Train the model using fp16.""")
@@ -45,8 +45,8 @@ def _activation_summary(x):
     """
     """
     tensor_name = re.sub('%s_[0-9]*/' %TOWER_NAME,'',x.op.name)
-    tf.histogram_summary(tensor_name + '/activations',x)
-    tf.scalar_summary(tensor_name + '/sparsity',tf.nn.zero_fraction(x))
+    tf.summary.histogram(tensor_name + '/activations',x)
+    tf.summary.histogram(tensor_name + '/sparsity',tf.nn.zero_fraction(x))
 
 def _variable_on_cpu(name,shape,initializer):
     with tf.device('/cpu:0'):
@@ -68,7 +68,7 @@ def _variable_with_weight_decay(name,shape,stddev,wd):
         tf.truncated_normal_initializer(stddev=stddev,dtype=dtype)
     )
     if wd is not None:
-        weigth_decay = tf.mul(tf.nn.l2_loss(var),wd,name='weight_loss')
+        weigth_decay = tf.multiply(tf.nn.l2_loss(var),wd,name='weight_loss')
         tf.add_to_collection('losses',weigth_decay)
     return var
 
@@ -195,7 +195,7 @@ def cnn_model(input_images):
 def loss(logits,labels):
     labels = tf.cast(labels,tf.int64)
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-        logits,labels,name='cross_entropy_per_example'
+        logits=logits,labels=labels,name='cross_entropy_per_example'
     )
     cross_entropy_mean = tf.reduce_mean(cross_entropy,name='cross_entropy')
     tf.add_to_collection('losses',cross_entropy_mean)
@@ -203,7 +203,7 @@ def loss(logits,labels):
 
 def cost(logits,labels):
     labels = tf.cast(labels,tf.int64)
-    cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits,labels,name='cross_entropy'))
+    cross_entropy_mean = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels,logits=logits,name='cross_entropy'))
     return cross_entropy_mean
 
 def _add_loss_summaries(total_loss):
@@ -211,8 +211,8 @@ def _add_loss_summaries(total_loss):
     losses = tf.get_collection('losses')
     loss_averages_op = loss_averages.apply(losses+[total_loss])
     for l in losses + [total_loss]:
-        tf.scalar_summary(l.op.name + ' (raw)',1)
-        tf.scalar_summary(l.op.name,loss_averages.average(l))
+        tf.summary.scalar(l.op.name + ' (raw)',1)
+        tf.summary.scalar(l.op.name,loss_averages.average(l))
 
     return loss_averages_op
 
@@ -228,7 +228,7 @@ def train(total_loss,global_step,decay=False):
             LEARNING_RATE_DECAY_FACTOR,
             staircase=True
         )
-        tf.scalar_summary('learning_rate',lr)
+        tf.summary.scalar('learning_rate',lr)
 
         loss_averages_op = _add_loss_summaries(total_loss)
 
@@ -239,11 +239,11 @@ def train(total_loss,global_step,decay=False):
         apply_gradient_op = opt.apply_gradients(grads,global_step=global_step)
 
         for var in tf.trainable_variables():
-            tf.histogram_summary(var.op.name,var)
+            tf.summary.histogram(var.op.name,var)
 
         for grad,var in grads:
             if grad is not None:
-                tf.histogram_summary(var.op.name + '/gradients',grad)
+                tf.summary.histogram(var.op.name + '/gradients',grad)
         
         variable_averages = tf.train.ExponentialMovingAverage(
             MOVING_AVERAGE_DECAY,

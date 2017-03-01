@@ -70,7 +70,7 @@ def _generate_image_and_label_batch(image,label,min_queue_examples,batch_size,sh
         label_batch:标签batch。1D Tensor[batch_size]
     """
     #创建一个队列，这个队列将样本打乱，之后从样本队列中读取batch_size个image,label对
-    num_preprocess_threads = 12
+    num_preprocess_threads = 8
     if shuffle:
         image_batch,label_batch = tf.train.shuffle_batch(
             [image,label],
@@ -85,7 +85,7 @@ def _generate_image_and_label_batch(image,label,min_queue_examples,batch_size,sh
             num_threads=num_preprocess_threads,
             capacity=min_queue_examples + 3 * batch_size)
     
-    tf.image_summary("cifar10-images",image_batch)
+    tf.summary.image("cifar10-images",image_batch)
 
     return image_batch,tf.reshape(label_batch,[batch_size])
 
