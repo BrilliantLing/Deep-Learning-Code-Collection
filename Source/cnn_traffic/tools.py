@@ -58,3 +58,10 @@ def max_pooling(input_matrix, kernel_size, stride=[1, 2, 2, 1], padding='SAME', 
 def lrn(input_matrix, depth_radius, bias, alpha, beta, name):
     local_response_normalization = tf.nn.lrn(input_matrix, depth_radius, bias, alpha, beta, name)
     return local_response_normalization
+
+def fc(input_fc, in_channel, out_channel, name=None):
+    weights = _variable_with_weight_decay('weights', shape=[in_channel, out_channel],stddev=0.04,wd=0.004)
+    biases = _variable_on_cpu('biases',[out_channel],tf.constant_initializer(0.1))
+    fc = tf.nn.relu(tf.matmul(input_fc, weights) + biases, name=name)
+    _activation_summary(fc)
+    return fc
