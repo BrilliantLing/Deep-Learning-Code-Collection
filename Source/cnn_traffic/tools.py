@@ -4,7 +4,44 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from six.moves import xrange
+
 import tensorflow as tf
+
+import os
+
+def read_and_decode(filename,feature_name):
+    filename_queue = tf.train.string_input_producer([filename])
+    reader = tf.TFRecordReader()
+    _, serialized_example = reader.read(filename_queue)
+    features = tf.parse_single_example(
+        serialized_example,
+        features = {
+            feature_name: tf.FixedLenFeature([],tf.string)
+        }
+    )
+    flow_data = tf.decode_raw(feature[feature_name],tf.float64)
+    flow_data = tf.reshape(35,288)
+    flow_data = tf.cast(flow_data,tf.float32)
+    return flow_data
+
+def inputs(tfrecords_path, batch_size, min_after_dequeue, random=True):
+    mat = read_and_decode(tfrecords_path, 'flow')
+    if random is not True:
+        mat = tf.train.batch(
+            [mat],
+            batch_size=batch_size,
+            capacity=32 * batch_size + 64
+            num_threads=12
+        )
+    else:
+        mat = tf.train.shuffle_batch(
+            [mat],
+            batch_size=batch_size,
+            min_after_dequeue = min_after_dequeue
+            num_threads=12
+        ) 
+    return mat
 
 def _activation_summary(x):
     """
@@ -38,11 +75,10 @@ def _variable_with_weight_decay(name,shape,stddev,wd):
     return var
 
 def conv2d(input_matrix, kernel_size, in_channel, out_channel, stride=[1, 1, 1, 1], padding='SAME', name=None):
-    kernel = _variable_with_weight_decay_gpu(
-        'weights',
+    kernel = _variable_on_cpu(
+        'kernels',
         shape = [kernel_size, kernel_size, in_channel, out_channel],
-        stddev=5e-2,
-        wd=0.0
+        tf.truncated_normal_initializer(stddev=5e-2)
     )
     biases = _variable_on_gpu('biases', [out_channel], tf.constant_initializer(0.0))
     conv = tf.nn.conv2d(input_matrix, kernel, padding, stride)
@@ -65,3 +101,7 @@ def fc(input_fc, in_channel, out_channel, name=None):
     fc = tf.nn.relu(tf.matmul(input_fc, weights) + biases, name=name)
     _activation_summary(fc)
     return fc
+
+def mse_loss(predictions,reality):
+    mse = tf.reduce_mean(tf.square(tf.subtract(reality, predictions)))
+    return mse
