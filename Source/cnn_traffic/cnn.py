@@ -62,6 +62,3 @@ def cnn_model(input_matrix):
         fc = tools.fc(reshape, dim, MATRIX_WIDTH*MATRXI_HEIGHT, 'fc1')
     
     return fc
-
-def loss(predictions,reality):
-    
