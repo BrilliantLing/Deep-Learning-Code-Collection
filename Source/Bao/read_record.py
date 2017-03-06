@@ -22,7 +22,10 @@ def read_and_decode(filename):
                                            'image' : tf.FixedLenFeature([], tf.string),
                                        })
     img = tf.decode_raw(features['image'], tf.uint8)
+    print(img)
     img = tf.reshape(img, [58, 58, 3])
     img = tf.cast(img, tf.float32) * (1. / 255) - 0.5
     label = tf.cast(features['label'], tf.int32)
     return img, label
+
+read_and_decode('/media/storage/Data/traffic_sign_data/logo.tfrecords')
