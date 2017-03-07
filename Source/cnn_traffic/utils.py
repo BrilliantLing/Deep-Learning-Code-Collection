@@ -6,7 +6,12 @@ from __future__ import print_function
 
 from six.moves import xrange
 
+import os
+import scipy.io as sio
+import numpy as np
 import tensorflow as tf
+
+FLAGS = tf.app.flags.FLAGS
 
 import os
 
@@ -20,8 +25,9 @@ def read_and_decode(filename,feature_name):
             feature_name: tf.FixedLenFeature([],tf.string)
         }
     )
-    flow_data = tf.decode_raw(feature[feature_name],tf.float64)
-    flow_data = tf.reshape(35,288)
+    flow_data = tf.decode_raw(features[feature_name],tf.float64)
+    print(flow_data)
+    flow_data = tf.reshape(flow_data, [35, 288, 1])
     flow_data = tf.cast(flow_data,tf.float32)
     return flow_data
 
@@ -31,14 +37,15 @@ def inputs(tfrecords_path, batch_size, min_after_dequeue, random=True):
         mat = tf.train.batch(
             [mat],
             batch_size=batch_size,
-            capacity=32 * batch_size + 64
+            capacity=32 * batch_size + 64,
             num_threads=12
         )
     else:
         mat = tf.train.shuffle_batch(
             [mat],
             batch_size=batch_size,
-            min_after_dequeue = min_after_dequeue
+            min_after_dequeue = min_after_dequeue,
+            capacity=32 * batch_size + 64,
             num_threads=12
         ) 
     return mat
@@ -46,7 +53,7 @@ def inputs(tfrecords_path, batch_size, min_after_dequeue, random=True):
 def _activation_summary(x):
     """
     """
-    tensor_name = re.sub('%s_[0-9]*/' %TOWER_NAME,'',x.op.name)
+    tensor_name = x.op.name
     tf.summary.histogram(tensor_name + '/activations',x)
     tf.summary.scalar(tensor_name + '/sparsity',tf.nn.zero_fraction(x))
 
@@ -77,18 +84,18 @@ def _variable_with_weight_decay(name,shape,stddev,wd):
 def conv2d(input_matrix, kernel_size, in_channel, out_channel, stride=[1, 1, 1, 1], padding='SAME', name=None):
     kernel = _variable_on_cpu(
         'kernels',
-        shape = [kernel_size, kernel_size, in_channel, out_channel],
-        tf.truncated_normal_initializer(stddev=5e-2)
+        [kernel_size, kernel_size, in_channel, out_channel],
+        tf.truncated_normal_initializer(stddev=5e-2, dtype=tf.float32)
     )
     biases = _variable_on_gpu('biases', [out_channel], tf.constant_initializer(0.0))
-    conv = tf.nn.conv2d(input_matrix, kernel, padding, stride)
+    conv = tf.nn.conv2d(input_matrix, kernel, stride, padding)
     conv = tf.nn.bias_add(conv, biases)
     conv = tf.nn.relu(conv, name=name)
     _activation_summary(conv)
     return conv
 
 def max_pooling(input_matrix, kernel_size, stride=[1, 2, 2, 1], padding='SAME', name=None):
-    pool = tf.nn.max_pool(input_matrix, [1, kernel_size, kernel_size, 1], stride, name=name)
+    pool = tf.nn.max_pool(input_matrix, [1, kernel_size, kernel_size, 1], stride, padding,name=name)
     return pool
 
 def lrn(input_matrix, depth_radius, bias, alpha, beta, name):
@@ -105,3 +112,21 @@ def fc(input_fc, in_channel, out_channel, name=None):
 def mse_loss(predictions,reality):
     mse = tf.reduce_mean(tf.square(tf.subtract(reality, predictions)))
     return mse
+
+def get_mat_mean_and_stddev(filename,variable_name):
+    mat = sio.loadmat(filename)
+    mat = mat[variable_name]
+    mean=mat.mean()
+    stddev = mat.std()
+    return mean, stddev
+
+def main():
+    mean_pred,stddev_pred = get_mat_mean_and_stddev('D:\\MasterDL\\data_set\\traffic_data\\2011_flow_test_prediction\\LL20110901.mat', 'liuliang')
+    mean_real,stddev_real = get_mat_mean_and_stddev('D:\\MasterDL\\data_set\\traffic_data\\2011_flow_test_reality\\LL20110902.mat', 'liuliang')
+    print(mean_pred)
+    print(mean_real)
+    print(stddev_pred)
+    print(stddev_real)
+
+if __name__ == '__main__':
+    main()
