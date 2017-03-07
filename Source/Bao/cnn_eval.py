@@ -15,7 +15,7 @@ import read_record
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('eval_dir', 'traffic_sign_eval',
+tf.app.flags.DEFINE_string('eval_dir', '/media/storage/Data/traffic_sign_eval',
                            """Directory where to write event logs.""")
 tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
