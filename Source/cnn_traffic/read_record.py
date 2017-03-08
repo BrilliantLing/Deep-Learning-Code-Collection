@@ -4,6 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import numpy as np
 
 from six.moves import xrange
 import tensorflow as tf
@@ -15,10 +16,9 @@ def read_and_decode(filename,feature_name):
     features = tf.parse_single_example(
         serialized_example,
         features = {
-            feature_name: tf.FixedLenFeature([],tf.string)
+            'flow': tf.FixedLenFeature([],tf.string)
         }
     )
-    flow_data = tf.decode_raw(feature[feature_name],tf.float64)
-    flow_data = tf.reshape(35,288)
-    flow_data = tf.cast(flow_data,tf.float32)
+    data = tf.decode_raw(features['flow'],tf.uint8)
+    data = tf.reshape(data,[35,288])
     return flow_data
