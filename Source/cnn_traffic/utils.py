@@ -120,13 +120,6 @@ def get_mat_mean_and_stddev(filename,variable_name):
     stddev = mat.std()
     return mean, stddev
 
-def main():
-    mean_pred,stddev_pred = get_mat_mean_and_stddev('D:\\MasterDL\\data_set\\traffic_data\\2011_flow_test_prediction\\LL20110901.mat', 'liuliang')
-    mean_real,stddev_real = get_mat_mean_and_stddev('D:\\MasterDL\\data_set\\traffic_data\\2011_flow_test_reality\\LL20110902.mat', 'liuliang')
-    print(mean_pred)
-    print(mean_real)
-    print(stddev_pred)
-    print(stddev_real)
-
-if __name__ == '__main__':
-    main()
+def error_rate(predictions,reality):
+    er = tf.reduce_mean(tf.div(tf.abs(tf.subtract(predictions, reality)), reality))
+    return er
