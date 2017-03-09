@@ -20,8 +20,8 @@ tf.app.flags.DEFINE_boolean('use_fp16', False, """Train the model using fp16."""
 tf.app.flags.DEFINE_integer('batch_size', 1, """Number of examples a batch have""")
 tf.app.flags.DEFINE_string('data_dir','D:\\MasterDL\\data_set\\traffic_data\\tfrecords\\',"""Directory where the Data stored""")
 
-MATRIX_WIDTH = 288
-MATRXI_HEIGHT = 35
+MATRIX_WIDTH = 216
+MATRXI_HEIGHT = 32
 
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 344
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 344
