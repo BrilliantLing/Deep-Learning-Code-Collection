@@ -5,8 +5,10 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-#import cnn
-import cnn_contrast
+
+#import cnn_contrast
+import cnn
+#import ann
 import utils
 
 import argparse
@@ -30,11 +32,11 @@ def train():
     with tf.Graph().as_default():
         mat_batch = utils.inputs(FLAGS.data_dir+FLAGS.train_prediction_filename, FLAGS.batch_size, 64)
         reality = utils.read_and_decode(FLAGS.data_dir+FLAGS.train_reality_filename,'flow')
-        reality = tf.reshape(reality, [1, 288*35])
+        reality = tf.reshape(reality, [1, 216 * 32])
 
         print(reality.shape)
 
-        logits = cnn_contrast.cnn_model_1(mat_batch)
+        logits = cnn.cnn_model(mat_batch)
 
         print(logits.shape)
 
@@ -55,7 +57,7 @@ def train():
         tf.train.start_queue_runners(sess=sess)
 
         summary_writer = tf.summary.FileWriter('D:\\MasterDL\\data_set\\traffic_data\\flow_train_data')
-        for step in xrange(FLAGS.max_steps):
+        for step in xrange(FLAGS.max_steps + 1):
             start_time = time.time()
             _, loss_value = sess.run([train_step, loss])
             duration = time.time() - start_time
