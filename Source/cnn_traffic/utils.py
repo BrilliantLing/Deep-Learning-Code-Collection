@@ -27,7 +27,7 @@ def read_and_decode(filename,feature_name):
     )
     flow_data = tf.decode_raw(features[feature_name],tf.float64)
     print(flow_data)
-    flow_data = tf.reshape(flow_data, [35, 288, 1])
+    flow_data = tf.reshape(flow_data, [32, 216, 1])
     flow_data = tf.cast(flow_data,tf.float32)
     return flow_data
 
