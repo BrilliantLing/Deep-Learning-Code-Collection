@@ -77,6 +77,12 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
     for matfile in os.listdir(data_dir):
         mat = sio.loadmat(data_dir + matfile)
         mat = mat[variable_name]
+        mat = np.delete(mat, 2, 0)
+        mat = np.delete(mat, 29, 0)
+        mat = np.delete(mat, 28, 0)
+        mat = mat[:,72:288]
+        #print(mat)
+        #print(mat.shape)
         mean=mat.mean()
         stddev = mat.std()
         mat = preprocessing.scale(mat)
@@ -98,9 +104,11 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
 
 def main():
     #create_tfrecord(tp_flow_data_dir, target_dir, 'tp_traffic_flow.tfrecords','liuliang')
-    #create_tfrecord(ep_flow_data_dir, target_dir, 'ep_traffic_flow.tfrecords','liuliang')
-    create_tfrecord(tr_flow_data_dir, target_dir, 'tr_traffic_flow.tfrecords','liuliang')
-    create_tfrecord(er_flow_data_dir, target_dir, 'er_traffic_flow.tfrecords','liuliang')
+    mean, stddev = create_tfrecord(ep_flow_data_dir, target_dir, 'ep_traffic_flow.tfrecords','liuliang')
+    print(mean,stddev)
+    #create_tfrecord(tr_flow_data_dir, target_dir, 'tr_traffic_flow.tfrecords','liuliang')
+    mean, stddev = create_tfrecord(er_flow_data_dir, target_dir, 'er_traffic_flow.tfrecords','liuliang')
+    print(mean,stddev)
 
     pass
 

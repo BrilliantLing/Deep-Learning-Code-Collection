@@ -16,9 +16,10 @@ def read_and_decode(filename,feature_name):
     features = tf.parse_single_example(
         serialized_example,
         features = {
-            'flow': tf.FixedLenFeature([],tf.string)
+            feature_name: tf.FixedLenFeature([],tf.string)
         }
     )
-    data = tf.decode_raw(features['flow'],tf.uint8)
-    data = tf.reshape(data,[35,288])
-    return flow_data
+    data = tf.decode_raw(features[feature_name],tf.float64)
+    data = tf.reshape(data,[32,216])
+    print(data)
+    return data
