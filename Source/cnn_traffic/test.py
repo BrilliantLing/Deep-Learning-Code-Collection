@@ -64,12 +64,12 @@ def evaluate():
         eval_data = FLAGS.eval_data == 'test'
         prediction = utils.inputs(FLAGS.data_dir+FLAGS.test_prediction_filename, FLAGS.batch_size, 1)
         reality = utils.read_and_decode(FLAGS.data_dir+FLAGS.test_reality_filename,'flow')
-        reality = tf.reshape(reality,[1, 216*32])
-        reality = tf.add(tf.multiply(reality, 130), 379)
+        reality = tf.reshape(reality,[1, 72*32])
+        reality = tf.add(tf.multiply(reality, 130), 378)
         
         logits = cnn.cnn_model(prediction)
         #logits = prediction
-        logits = tf.add(tf.multiply(logits, 131), 369)
+        logits = tf.add(tf.multiply(logits, 131), 370)
 
         mse = utils.mse_loss(logits,reality)
         er = utils.error_rate(logits,reality)
