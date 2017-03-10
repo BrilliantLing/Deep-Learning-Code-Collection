@@ -21,10 +21,10 @@ from PIL import Image
 FLAGS = tf.app.flags.FLAGS
 
 #the dirctories that the mat files is stored
-tp_flow_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_flow_train_prediction\\'
-ep_flow_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_flow_test_prediction\\'
-tr_flow_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_flow_train_reality\\'
-er_flow_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_flow_test_reality\\'
+tp_speed_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_speed_train_prediction\\'
+ep_speed_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_speed_test_prediction\\'
+tr_speed_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_speed_train_reality\\'
+er_speed_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_speed_test_reality\\'
 speed_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_speed\\'
 occupancy_data_dir = 'D:\\MasterDL\\data_set\\traffic_data\\2011_occupancy\\'
 
@@ -81,8 +81,9 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
         mat = np.delete(mat, 29, 0)
         mat = np.delete(mat, 28, 0)
         mat = mat[:,72:288]
+        #mat = mat[:,::3]
         #print(mat)
-        #print(mat.shape)
+        print(mat.shape)
         mean=mat.mean()
         stddev = mat.std()
         mat = preprocessing.scale(mat)
@@ -92,7 +93,7 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
         example = tf.train.Example(
             features = tf.train.Features(
                 feature = {
-                    'flow':_bytes_feature(raw)
+                    'speed':_bytes_feature(raw)
                 }
             )
         )
@@ -103,11 +104,11 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
 
 
 def main():
-    #create_tfrecord(tp_flow_data_dir, target_dir, 'tp_traffic_flow.tfrecords','liuliang')
-    mean, stddev = create_tfrecord(ep_flow_data_dir, target_dir, 'ep_traffic_flow.tfrecords','liuliang')
+    create_tfrecord(tp_flow_data_dir, target_dir, 'tp_traffic_speed.tfrecords','sudo')
+    mean, stddev = create_tfrecord(ep_flow_data_dir, target_dir, 'ep_traffic_speed.tfrecords','sudo')
     print(mean,stddev)
-    #create_tfrecord(tr_flow_data_dir, target_dir, 'tr_traffic_flow.tfrecords','liuliang')
-    mean, stddev = create_tfrecord(er_flow_data_dir, target_dir, 'er_traffic_flow.tfrecords','liuliang')
+    create_tfrecord(tr_flow_data_dir, target_dir, 'tr_traffic_speed.tfrecords','sudo')
+    mean, stddev = create_tfrecord(er_flow_data_dir, target_dir, 'er_traffic_speed.tfrecords','sudo')
     print(mean,stddev)
 
     pass

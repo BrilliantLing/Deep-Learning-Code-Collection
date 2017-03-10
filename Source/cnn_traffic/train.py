@@ -26,13 +26,13 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('train_dir','D:\\MasterDL\\data_set\\traffic_data\\flow_train_data\\',"""The directory where the Train data stored""")
 tf.app.flags.DEFINE_string('train_prediction_filename','tp_traffic_flow.tfrecords',"""The name of tfrecords file for train""")
 tf.app.flags.DEFINE_string('train_reality_filename', 'tr_traffic_flow.tfrecords', """The name of tfrecords file which is """)
-tf.app.flags.DEFINE_integer('max_steps',5000,"""The max steps the train process will run""")
+tf.app.flags.DEFINE_integer('max_steps',30000,"""The max steps the train process will run""")
 
 def train():
     with tf.Graph().as_default():
         mat_batch = utils.inputs(FLAGS.data_dir+FLAGS.train_prediction_filename, FLAGS.batch_size, 64)
         reality = utils.read_and_decode(FLAGS.data_dir+FLAGS.train_reality_filename,'flow')
-        reality = tf.reshape(reality, [1, 216 * 32])
+        reality = tf.reshape(reality, [1, 72 * 32])
 
         print(reality.shape)
 
@@ -73,7 +73,7 @@ def train():
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
             
-            if step % 1000 == 0:
+            if step % 2000 == 0:
                 checkpoint_path = os.path.join(FLAGS.train_dir, 'cnn_model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
 
