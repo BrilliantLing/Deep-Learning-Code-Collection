@@ -9,6 +9,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+#import ann
 import cnn
 import utils
 import read_mat
@@ -46,7 +47,7 @@ def eval_once(saver, mse_op, er_op, summary_writer, summary_op):
             for qr in tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS):
                 threads.extend(qr.create_threads(sess, coord=coord, daemon=True, start=True))
 
-            num_iter = int(math.ceil(FLAGS.num_examples / FLAGS.batch_size))
+            num_iter = int(math.ceil(FLAGS.num_examples / 1))
             mse = sess.run(mse_op)
             rmse = np.sqrt(mse)
             er = sess.run(er_op)
@@ -62,14 +63,14 @@ def eval_once(saver, mse_op, er_op, summary_writer, summary_op):
 def evaluate():
     with tf.Graph().as_default() as g:
         eval_data = FLAGS.eval_data == 'test'
-        prediction = utils.inputs(FLAGS.data_dir+FLAGS.test_prediction_filename, FLAGS.batch_size, 1)
+        prediction = utils.inputs(FLAGS.data_dir+FLAGS.test_prediction_filename, 1, 1)
         reality = utils.read_and_decode(FLAGS.data_dir+FLAGS.test_reality_filename,'flow')
         reality = tf.reshape(reality,[1, 72*32])
-        reality = tf.add(tf.multiply(reality, 130), 378)
+        reality = tf.add(tf.multiply(reality, 384), 1138)
         
-        logits = cnn.cnn_model(prediction)
+        logits = cnn.cnn_model(prediction, False)
         #logits = prediction
-        logits = tf.add(tf.multiply(logits, 131), 370)
+        logits = tf.add(tf.multiply(logits, 380), 1109)
 
         mse = utils.mse_loss(logits,reality)
         er = utils.error_rate(logits,reality)
