@@ -13,7 +13,6 @@ import tensorflow as tf
 
 FLAGS = tf.app.flags.FLAGS
 
-import os
 
 def read_and_decode(filename,feature_name):
     filename_queue = tf.train.string_input_producer([filename])
@@ -81,6 +80,9 @@ def _variable_with_weight_decay(name,shape,stddev,wd):
         tf.add_to_collection('losses',weigth_decay)
     return var
 
+def _variable_with_regularization():
+    return 0
+
 def conv2d(input_matrix, kernel_size, in_channel, out_channel, stride=[1, 1, 1, 1], padding='SAME', name=None):
     kernel = _variable_on_cpu(
         'kernels',
@@ -110,7 +112,7 @@ def fc(input_fc, in_channel, out_channel, name=None):
     return fc
 
 def mse_loss(predictions,reality):
-    mse = tf.reduce_mean(tf.square(tf.subtract(reality, predictions)))
+    mse = tf.losses.mean_squared_error(reality, predictions)
     return mse
 
 def get_mat_mean_and_stddev(filename,variable_name):
