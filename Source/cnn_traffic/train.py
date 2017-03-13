@@ -26,23 +26,24 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('train_dir','D:\\MasterDL\\data_set\\traffic_data\\flow_train_data\\',"""The directory where the Train data stored""")
 tf.app.flags.DEFINE_string('train_prediction_filename','tp_traffic_flow.tfrecords',"""The name of tfrecords file for train""")
 tf.app.flags.DEFINE_string('train_reality_filename', 'tr_traffic_flow.tfrecords', """The name of tfrecords file which is """)
-tf.app.flags.DEFINE_integer('max_steps',30000,"""The max steps the train process will run""")
+tf.app.flags.DEFINE_integer('max_steps',100000,"""The max steps the train process will run""")
 
 def train():
     with tf.Graph().as_default():
         mat_batch = utils.inputs(FLAGS.data_dir+FLAGS.train_prediction_filename, FLAGS.batch_size, 64)
-        reality = utils.read_and_decode(FLAGS.data_dir+FLAGS.train_reality_filename,'flow')
-        reality = tf.reshape(reality, [1, 72 * 32])
+        #reality = utils.read_and_decode(FLAGS.data_dir+FLAGS.train_reality_filename,'flow')
+        reality = mat_batch
+        reality = tf.reshape(reality, [FLAGS.batch_size, 72 * 32])
 
         print(reality.shape)
 
-        logits = cnn.cnn_model(mat_batch)
+        logits = cnn.cnn_model(mat_batch, True)
 
         print(logits.shape)
 
         loss = utils.mse_loss(logits, reality)
         
-        opt = tf.train.GradientDescentOptimizer(0.01)
+        opt = tf.train.GradientDescentOptimizer(0.1)
         train_step = opt.minimize(loss)
 
         init = tf.global_variables_initializer()
@@ -66,14 +67,15 @@ def train():
 
             if step % 100 == 0:
                 num_examples_per_step = FLAGS.batch_size
-                examples_per_sec = num_examples_per_step / duration
+                #examples_per_sec = num_examples_per_step / duration
                 sec_per_batch = float(duration)
-                format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)')
-                print (format_str % (datetime.now(), step, loss_value, examples_per_sec, sec_per_batch))
+                #format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch)')
+                #print (format_str % (datetime.now(), step, loss_value, examples_per_sec, sec_per_batch))
+                print('step: ', step,'loss: ',loss_value)
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
             
-            if step % 2000 == 0:
+            if step % 5000 == 0:
                 checkpoint_path = os.path.join(FLAGS.train_dir, 'cnn_model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
 
