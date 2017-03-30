@@ -12,7 +12,7 @@ import numpy as np
 from six.moves import xrange
 import tensorflow as tf
 
-import cnn
+import CNN
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -28,13 +28,13 @@ def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0,trainable=False)
 
-        images,labels = cnn.distorted_inputs()
-        logits = cnn.cnn_model(images)
+        images,labels = CNN.distorted_inputs()
+        logits = CNN.cnn_model(images)
         print(logits.get_shape())
         print(logits.get_shape())
         print(labels.get_shape())
-        loss = cnn.loss(logits,labels)
-        train_op = cnn.train(loss,global_step,True)
+        loss = CNN.loss(logits,labels)
+        train_op = CNN.train(loss,global_step,True)
 
         saver = tf.train.Saver(tf.all_variables())
         summary_op = tf.summary.merge_all()
