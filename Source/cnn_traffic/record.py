@@ -18,3 +18,5 @@ from six.moves import xrange
 import tensorflow as tf
 from PIL import Image
 
+def create_numpy_record(matrix, target_dir, filename):
+    np.save(matrix, target_dir+filename)
