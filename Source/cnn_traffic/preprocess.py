@@ -83,8 +83,6 @@ def mid_resolution_speed_data_process(data, useless_detectors, start, end):
     return data
 
 def mid_resolution_speed_data_process(data, useless_detectors, start, end):
-
-
     for detector in useless_detectors:
         data = np.delete(data, detector, 0)
     data = data[:,start:end]
