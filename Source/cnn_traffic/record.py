@@ -27,10 +27,14 @@ def _int64list_feature(value):
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
-#func
-def create_tfrecord(data_dirs, target_dir, record_name, feature_name, process):
+def create_tfrecord(data_dirs, target_dir, record_name, variable_name, feature_name, process):
     if(os.path.exists(target_dir + record_name)):
         print('The tfrecord file exist, it will be deleted')
         os.remove(target_dir + record_name)
     writer = tf.python_io.TFRecordWriter(target_dir + record_name)
-    filenames = os.listdir(data_dirs[])
+    today_filenames = os.listdir(data_dirs[0])
+    tomorrow_filenames = os.listdir(data_dirs[1])
+    for i in range(len(today_filenames)):
+        today_data = sio.loadmat(data_dirs[0]+today_filenames[i])
+        tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
+        
