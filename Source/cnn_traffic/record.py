@@ -27,6 +27,7 @@ def _int64list_feature(value):
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
+#func
 def create_tfrecord(data_dirs, target_dir, record_name, feature_name, process):
     if(os.path.exists(target_dir + record_name)):
         print('The tfrecord file exist, it will be deleted')
