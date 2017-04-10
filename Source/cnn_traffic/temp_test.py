@@ -1,5 +1,5 @@
-import numpy as np
-array=np.arange(16).reshape(4,4)
-array[:,0] = array[:,2]+ array[:,3]
+import os
 
-print(array)
+file_list = os.listdir('D:\\MasterDL\\data_set\\traffic_data\\2011_flow\\2011_flow')
+for i in range(len(file_list)):
+    print(file_list[i])
