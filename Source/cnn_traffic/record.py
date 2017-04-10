@@ -32,4 +32,4 @@ def create_tfrecord(data_dirs, target_dir, record_name, feature_name, process):
         print('The tfrecord file exist, it will be deleted')
         os.remove(target_dir + record_name)
     writer = tf.python_io.TFRecordWriter(target_dir + record_name)
-    
+    filenames = os.listdir(data_dirs[])
