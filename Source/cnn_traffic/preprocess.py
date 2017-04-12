@@ -95,3 +95,8 @@ def high_resolution_speed_data_process(data, useless_detectors, start, end):
     data = data[:,::2]
     return data
 
+def normalize(data):
+    data_max = data.max()
+    data_min = data.min()
+    data = (data - data_min) / (data_max - data_min)
+    return data, data_max, data_min
