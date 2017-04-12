@@ -1,5 +1,7 @@
-import os
+import numpy as np
 
-file_list = os.listdir('D:\\MasterDL\\data_set\\traffic_data\\2011_flow\\2011_flow')
-for i in range(len(file_list)):
-    print(file_list[i])
+mat = np.array([[1,2,3],[4,5,6],[7,8,9]])
+mat_max = mat.max()
+mat_min = mat.min()
+mat = (mat-mat_min)/(mat_max - mat_min)
+print(mat)
