@@ -66,4 +66,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, process):
         print('today:'+today_filenames[i]+' tomorrow:'+tomorrow_filenames[i]+' have been processed.')
     writer.close()
     return today_max_list, today_min_list, tomorrow_max_list, tomorrow_min_list
-    
+
+def read_and_decode(filename):
+    filename_queue = tf.train.string_input_producer(filename,shuffle=True)
+    reader = tf.TFRecordReader()
