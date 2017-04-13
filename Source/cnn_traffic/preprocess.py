@@ -62,8 +62,8 @@ def low_resolution_speed_data_process(data, useless_detectors, start, end):
             if data[i][j] == 0:
                 data[i][j] = 1
     for i in range(data.shape[1]):
-        if i % 3 == 0:
-            data[:,i] = data[:,i] + data[:,i+1] + data[:,i+2]
+        if i % 6 == 0:
+            data[:,i] = (data[:,i] + data[:,i+1] + data[:,i+2] + data[:,i+3] + data[:,i+4] + data[:,i+5]) / 6
     data = data[:,::6]
     return data
 
@@ -76,9 +76,9 @@ def mid_resolution_speed_data_process(data, useless_detectors, start, end):
             if data[i][j] == 0:
                 data[i][j] = 1
     for i in range(data.shape[1]):
-        if i % 3 == 0:
-            data[:,i] = data[:,i] + data[:,i+1] + data[:,i+2]
-    data = data[:,::3]
+        if i % 4 == 0:
+            data[:,i] = (data[:,i] + data[:,i+1] + data[:,i+2] + data[:,i+3]) / 4
+    data = data[:,::4]
     return data
 
 def high_resolution_speed_data_process(data, useless_detectors, start, end):
@@ -91,8 +91,8 @@ def high_resolution_speed_data_process(data, useless_detectors, start, end):
                 data[i][j] = 1
     for i in range(data.shape[1]):
         if i % 3 == 0:
-            data[:,i] = data[:,i] + data[:,i+1] + data[:,i+2]
-    data = data[:,::2]
+            data[:,i] = (data[:,i] + data[:,i+1] + data[:,i+2]) / 3
+    data = data[:,::3]
     return data
 
 def normalize(data):
