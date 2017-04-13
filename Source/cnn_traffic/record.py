@@ -125,3 +125,25 @@ def read_and_decode(filename, default, shape):
         tomorrow = tf.reshape(tomorrow, shape['mid'])
         tomorrow = tf.cast(tomorrow, tf.float64)
         return today, tommorrow
+    else:
+        features = tf.parse_single_example(
+            serialized_example,
+            features = {
+                'low_today':tf.FixedLenFeature([],tf.string),
+                'mid_today':tf.FixedLenFeature([],tf.string),
+                'high_today':tf.FixedLenFeature([],tf.string),
+                'mid_tomorrow':tf.FixedLenFeature([],tf.string)
+            }
+        )
+        low_today = tf.decode_raw(features['low_today'], tf.float64)
+        low_today = tf.reshape(low_today, shape['low'])
+        low_today = tf.cast(low_today, tf.float32)
+        mid_today = tf.decode_raw(features['mid_today'], tf.float64)
+        mid_today = tf.reshape(mid_today, shape['mid'])
+        high_today = tf.decode_raw(features['high_today'])
+        high_today = tf.reshape(high_today, shape['high'])
+        high_today = tf.cast(high_today, tf.float32)
+        mid_tomorrow = tf.decode_raw(features['mid_tomorrow'], tf.float64)
+        mid_tomorrow = tf.reshape(mid_tomorrow, shape['mid'])
+        mid_tomorrow = tf.cast(mid_tomorrow, tf.float32)
+        return low_today, mid_today, high_today, mid_tomorrow
