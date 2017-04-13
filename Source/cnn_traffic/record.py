@@ -106,23 +106,22 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
     writer.close()
     return today_max_list, today_min_list, tomorrow_max_list, tomorrow_min_list
 
-
-
-def read_and_decode(filename, shape):
+def read_and_decode(filename, default, shape):
     filename_queue = tf.train.string_input_producer(filename,shuffle=True)
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
-    features =  tf.parse_single_example(
-        serialized_example,
-        features = {
-            "today":tf.FixedLenFeature([],tf.string),
-            "tomorrow":tf.FixedLenFeature([],tf.string)
-        }
-    )
-    today_data = tf.decode_raw(features['today'], tf.float64)
-    tomorrow_data = tf.decode_raw(features['tomorrow'], tf.float64)
-    today_data = tf.reshape(today_data, shape)
-    tomorrow_data = t.reshape(today_data, shape)
-    today_data = tf.cast(today_data, tf.float32)
-    tomorrow_data = tf.cast(tomorrow_data, tf.floa32)
-    return today_data, tomorrow_data
+    if default is True:
+        features = tf.parse_single_example(
+            serialized_example,
+            features = {
+                'today':tf.FixedLenFeature([],tf.string),
+                'tomorrow':tf.FixedLenFeature([],tf.string)
+            }
+        )
+        today = tf.decode_raw(features['today'],tf.float64)
+        today = tf.reshape(today, shape['mid'])
+        today = tf.cast(today,tf.float32)
+        tomorrow = tf.decode_raw(features['tomorrow'],tf.float64)
+        tomorrow = tf.reshape(tomorrow, shape['mid'])
+        tomorrow = tf.cast(tomorrow, tf.float64)
+        return today, tommorrow
