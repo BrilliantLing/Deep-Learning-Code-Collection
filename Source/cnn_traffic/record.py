@@ -56,10 +56,10 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         example = tf.train.Example(
             features = tf.train.Features(
                 feature = {
-                    'low_today':_bytes_feature(low_today),
-                    'mid_today':_bytes_feature(mid_today),
-                    'high_today':_bytes_feature(high_today)
-                    'mid_tomorrow':_bytes_feature(mid_tomorrow)
+                    "low_today" :_bytes_feature(low_today),
+                    "mid_today" :_bytes_feature(mid_today),
+                    "high_today" :_bytes_feature(high_today),
+                    "mid_tomorrow" :_bytes_feature(mid_tomorrow)
                 }
             )
         )
@@ -87,7 +87,7 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
         today_min_list.append(today_min)
         today = today.tostring()
         tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
-        tomorrow_data = tomorrow_data[i]
+        tomorrow_data = tomorrow_data[variable_name]
         tomorrow = process(tomorrow_data, [2, 29, 28], 72, 288)
         tomorrow, tomorrow_max, tomorrow_min = pp.normalize(tomorrow)
         tomorrow_max_list.append(tomorrow_max)
@@ -96,8 +96,8 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
         example = tf.train.Example(
             features = tf.train.Features(
                 feature = {
-                    'today':_bytes_feature(today),
-                    'tomorrow':_bytes_feature(tomorrow)
+                    "today":_bytes_feature(today),
+                    "tomorrow":_bytes_feature(tomorrow)
                 }
             )
         )
@@ -107,15 +107,15 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
     return today_max_list, today_min_list, tomorrow_max_list, tomorrow_min_list
 
 def read_and_decode(filename, default, shape):
-    filename_queue = tf.train.string_input_producer(filename,shuffle=True)
+    filename_queue = tf.train.string_input_producer(filename,shuffle=False)
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     if default is True:
         features = tf.parse_single_example(
             serialized_example,
             features = {
-                'today':tf.FixedLenFeature([],tf.string),
-                'tomorrow':tf.FixedLenFeature([],tf.string)
+                "today":tf.FixedLenFeature([],tf.string),
+                "tomorrow":tf.FixedLenFeature([],tf.string)
             }
         )
         today = tf.decode_raw(features['today'],tf.float64)
@@ -147,3 +147,25 @@ def read_and_decode(filename, default, shape):
         mid_tomorrow = tf.reshape(mid_tomorrow, shape['mid'])
         mid_tomorrow = tf.cast(mid_tomorrow, tf.float32)
         return low_today, mid_today, high_today, mid_tomorrow
+
+def inputs(record_path, batch_size, min_after_dequeue, default=False, random=True):
+    pass
+
+def train_input(record_path, batch_size, shape, min_after_dequeue, random=True):
+    low_today, mid_today, high_today, mid_tomorrow = read_and_decode(record_path, False, shape)
+    if random is True:
+        ltoday_batch, mtoday_batch, htoday_batch, mtomorrow_batch = tf.train.shuffle_batch(
+            [low_today, mid_today, high_today, mid_tomorrow], 
+            batch_size=batch_size,
+            num_threads=8,
+            capacity=min_after_dequeue + 30,
+            min_after_dequeue=min_after_dequeue
+        )
+    else:
+        ltoday_batch, mtoday_batch, htoday_batch, mtomorrow_batch = tf.train.batch(
+            [low_today, mid_today, high_today, mid_tomorrow],
+            batch_size=batch_size,
+            num_threads=8,
+            capacity=min_after_dequeue + 30
+        )
+    return ltoday_batch, mtoday_batch, htoday_batch, mtomorrow_batch
