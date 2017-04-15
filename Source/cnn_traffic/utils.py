@@ -11,6 +11,8 @@ import scipy.io as sio
 import numpy as np
 import tensorflow as tf
 
+import losses
+
 def _activation_summary(x):
     """
     """
@@ -30,61 +32,20 @@ def _variable_on_gpu(name,shape,initializer):
         var = tf.get_variable(name,shape,initializer=initializer,dtype=dtype)
     return var
 
-def _variable_with_weight_decay(name,shape,stddev,wd):
+def _variable_with_weight_decay(name,shape,initializer,wd):
     dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
-    var = _variable_on_cpu(
+    var = _variable_on_gpu(
         name,
         shape,
-        tf.truncated_normal_initializer(stddev=stddev,dtype=dtype)
+        initializer
     )
     if wd is not None:
         weigth_decay = tf.multiply(tf.nn.l2_loss(var),wd,name='weight_loss')
         tf.add_to_collection('losses',weigth_decay)
     return var
 
-def conv2d(input_data, kernel_height, kernel_width, inchannels, outchannels, strides=[1,1,1,1], padding='SAME', name=None):
-    kernel = _variable_on_gpu(
-        'kernels',
-        shape=[kernel_height, kernel_width, inchannels, outchannels],
-        tf.truncated_normal_initializer(stddev=5e-2)   
-    )
-    biases = _variable_on_gpu(
-        'biases',
-        [outchannels],
-        tf.constant_initializer(0.0)
-    )
-    conv = tf.nn.conv2d(input_data, kernel, strides, padding)
-    conv = tf.nn.bias_add(conv, biases)
-    conv = tf.nn.relu(conv, name=name)
-    _activation_summary(conv)
-    return conv
-
-def max_pooling(input_data, kernel_height, kernel_width, strides=[1,2,2,1], padding='SAME', name=None):
-    pool = tf.nn.max_pool(input_data,[1, kernel_height, kernel_width, 1],strides,padding,name=name)
-    return pool
-
-def lrn(input_data, depth_radius, bias, alpha, beta, name):
-    pass
-
-def fc(input_data, inchannels, outchannels, name=None):
-    weights = _variable_on_gpu(
-        'weights',
-        [inchannels,outchannels],
-        tf.truncated_normal_initializer(stddev=0.05)
-    )
-    biases = _variable_on_gpu(
-        'biases',
-        [outchannels],
-        tf.constant_initializer(0.1)
-    )
-    fc = tf.nn.relu(tf.matmul(input_data,weights)+biases, name=name)
-    _activation_summary(fc)
-    return fc
-
-def mse_loss(predictions, reality):
-    mse = tf.losses.mean_squared_error(reality,predictions)
-    return mse
-
-def relative_er(predictions, reality):
-    er = tf.reduce_mean(tf.div(tf.abs(tf.subtract(predictions, reality)), reality))
-    return er
+def train(loss, global_step, num_samples):
+    learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*20, 0.5,staircase=True)
+    tf.summary.scalar('learning_rate', learning_rate)
+    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
+    return train_step
