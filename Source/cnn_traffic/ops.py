@@ -11,13 +11,16 @@ import scipy.io as sio
 import numpy as np
 import tensorflow as tf
 
+import utils as ut
+
 def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, strides=[1,1,1,1], padding='SAME', name=None):
-    kernel = _variable_on_gpu(
+    kernel = ut._variable_with_weight_decay(
         'kernels',
-        shape=[kernel_height, kernel_width, in_channels, out_channels],
-        tf.truncated_normal_initializer(stddev=5e-2)   
+        [kernel_height, kernel_width, in_channels, out_channels],
+        tf.truncated_normal_initializer(stddev=5e-2),
+        0.0
     )
-    biases = _variable_on_gpu(
+    biases = ut_variable_on_gpu(
         'biases',
         [out_channels],
         tf.constant_initializer(0.0)
@@ -36,12 +39,13 @@ def lrn(input_data, depth_radius, bias, alpha, beta, name):
     pass
 
 def fc(input_data, in_channels, out_channels, name=None):
-    weights = _variable_on_gpu(
+    weights = ut._variable_with_weight_decay(
         'weights',
         [in_channels,out_channels],
-        tf.truncated_normal_initializer(stddev=0.05)
+        tf.truncated_normal_initializer(stddev=0.05),
+        0.001
     )
-    biases = _variable_on_gpu(
+    biases = ut._variable_on_gpu(
         'biases',
         [out_channels],
         tf.constant_initializer(0.1)
