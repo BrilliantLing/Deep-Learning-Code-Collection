@@ -20,7 +20,6 @@ import os
 
 import numpy as np
 from six.moves import xrange
-import tensorflow as tf
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('train_dir','D:\\MasterDL\\data_set\\traffic_data\\flow_train_data\\',"""The directory where the Train data stored""")
