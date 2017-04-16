@@ -13,6 +13,8 @@ import tensorflow as tf
 
 import losses
 
+FLAGS = tf.app.flags.FLAGS
+
 def _activation_summary(x):
     """
     """
@@ -45,7 +47,7 @@ def _variable_with_weight_decay(name,shape,initializer,wd):
     return var
 
 def train(loss, global_step, num_samples):
-    learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*20, 0.5,staircase=True)
+    learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*60, 0.4,staircase=True)
     tf.summary.scalar('learning_rate', learning_rate)
-    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
+    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     return train_step

@@ -107,7 +107,7 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
     return today_max_list, today_min_list, tomorrow_max_list, tomorrow_min_list
 
 def read_and_decode(filename, default, shape):
-    filename_queue = tf.train.string_input_producer(filename,shuffle=False)
+    filename_queue = tf.train.string_input_producer([filename], shuffle=False)
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     if default is True:
@@ -140,7 +140,8 @@ def read_and_decode(filename, default, shape):
         low_today = tf.cast(low_today, tf.float32)
         mid_today = tf.decode_raw(features['mid_today'], tf.float64)
         mid_today = tf.reshape(mid_today, shape['mid'])
-        high_today = tf.decode_raw(features['high_today'])
+        mid_today = tf.cast(mid_today, tf.float32)
+        high_today = tf.decode_raw(features['high_today'], tf.float64)
         high_today = tf.reshape(high_today, shape['high'])
         high_today = tf.cast(high_today, tf.float32)
         mid_tomorrow = tf.decode_raw(features['mid_tomorrow'], tf.float64)

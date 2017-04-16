@@ -19,7 +19,7 @@ def relative_er(predictions, reality):
     er = tf.reduce_mean(tf.div(tf.abs(tf.subtract(predictions, reality)), reality))
     return er
 
-def loss(predictions, reality, loss_func):
+def total_loss(predictions, reality, loss_func):
     loss_val = loss_func(predictions, reality)
     tf.add_to_collection('losses', loss_val)
     return tf.add_n(tf.get_collection('losses'), name='total_loss')

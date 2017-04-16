@@ -20,7 +20,7 @@ def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, s
         tf.truncated_normal_initializer(stddev=5e-2),
         0.0
     )
-    biases = ut_variable_on_gpu(
+    biases = ut._variable_on_gpu(
         'biases',
         [out_channels],
         tf.constant_initializer(0.0)
@@ -28,7 +28,7 @@ def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, s
     conv = tf.nn.conv2d(input_data, kernel, strides, padding)
     conv = tf.nn.bias_add(conv, biases)
     conv = tf.nn.relu(conv, name=name)
-    _activation_summary(conv)
+    ut._activation_summary(conv)
     return conv
 
 def max_pooling(input_data, kernel_height, kernel_width, strides=[1,2,2,1], padding='SAME', name=None):
@@ -51,5 +51,5 @@ def fc(input_data, in_channels, out_channels, name=None):
         tf.constant_initializer(0.1)
     )
     fc = tf.nn.relu(tf.matmul(input_data,weights)+biases, name=name)
-    _activation_summary(fc)
+    ut._activation_summary(fc)
     return fc
