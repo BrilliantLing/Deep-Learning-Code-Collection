@@ -3,6 +3,7 @@ import tensorflow as tf
 
 FLAGS = tf.app.flags
 
+tf.app.flags.DEFINE_bool('use_fp16', False, """Train the model using fp16.""")
 tf.app.flags.DEFINE_integer('train_batch_size', 1, """The size of batch when training""")
 tf.app.flags.DEFINE_integer('test_batch_size', 1, """The size of batch when testing""")
 tf.app.flags.DEFINE_integer('epoch', 400, """The max iterations the model will be trained""")
