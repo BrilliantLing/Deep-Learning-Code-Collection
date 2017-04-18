@@ -13,13 +13,21 @@ import tensorflow as tf
 
 import utils as ut
 
-def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, strides=[1,1,1,1], padding='SAME', name=None):
-    kernel = ut._variable_with_weight_decay(
-        'kernels',
-        [kernel_height, kernel_width, in_channels, out_channels],
-        tf.truncated_normal_initializer(stddev=5e-2),
-        0.0
-    )
+def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, strides=[1,1,1,1], padding='SAME', regularization=False, name=None):
+    if regularization is not True:
+        kernel = ut._variable_with_weight_decay(
+            'kernels',
+            [kernel_height, kernel_width, in_channels, out_channels],
+            tf.truncated_normal_initializer(stddev=5e-2),
+            0.0
+        )
+    else:
+        kernel = ut._variable_with_weight_decay(
+            'kernels',
+            [kernel_height, kernel_width, in_channels, out_channels],
+            tf.truncated_normal_initializer(stddev=5e-2),
+            0.001
+        )
     biases = ut._variable_on_gpu(
         'biases',
         [out_channels],
@@ -38,13 +46,21 @@ def max_pooling(input_data, kernel_height, kernel_width, strides=[1,2,2,1], padd
 def lrn(input_data, depth_radius, bias, alpha, beta, name):
     pass
 
-def fc(input_data, in_channels, out_channels, name=None):
-    weights = ut._variable_with_weight_decay(
-        'weights',
-        [in_channels,out_channels],
-        tf.truncated_normal_initializer(stddev=0.05),
-        0.001
-    )
+def fc(input_data, in_channels, out_channels, regularization=True, name=None):
+    if regularization is True:
+        weights = ut._variable_with_weight_decay(
+            'weights',
+            [in_channels,out_channels],
+            tf.truncated_normal_initializer(stddev=0.05),
+            0.001
+        )
+    else:
+        weights = ut._variable_with_weight_decay(
+            'weights',
+            [in_channels,out_channels],
+            tf.truncated_normal_initializer(stddev=0.05),
+            0.0
+        )
     biases = ut._variable_on_gpu(
         'biases',
         [out_channels],
