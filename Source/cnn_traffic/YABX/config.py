@@ -6,7 +6,7 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_boolean('use_fp16', False, """Train the model using fp16.""")
 tf.app.flags.DEFINE_integer('train_batch_size', 1, """The size of batch when training""")
 tf.app.flags.DEFINE_integer('test_batch_size', 1, """The size of batch when testing""")
-tf.app.flags.DEFINE_integer('epoch', 300, """The max iterations the model will be trained""")
+tf.app.flags.DEFINE_integer('epoch', 400, """The max iterations the model will be trained""")
 tf.app.flags.DEFINE_integer('num_examples_train', 319, """The examples that the training set has""")
 tf.app.flags.DEFINE_integer('num_examples_test', 39, """The examples that the test set has""")
 tf.app.flags.DEFINE_string('train_dir','D:\\MasterDL\\data_set\\traffic_data\\speed\\train_data\\', """The directory where the training data saved in.""")

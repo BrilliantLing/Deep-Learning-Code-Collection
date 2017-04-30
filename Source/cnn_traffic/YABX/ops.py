@@ -13,7 +13,7 @@ import tensorflow as tf
 
 import utils as ut
 
-def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, strides=[1,1,1,1], padding='SAME', regularization=False, name=None):
+def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, strides=[1,1,1,1], padding='SAME', regularization=False, kernel_summary=False,name=None):
     if regularization is not True:
         kernel = ut._variable_with_weight_decay(
             'kernels',
@@ -37,6 +37,8 @@ def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, s
     conv = tf.nn.bias_add(conv, biases)
     conv = tf.nn.relu(conv, name=name)
     ut._activation_summary(conv)
+    if kernel_summary is True:
+        ut._kernel_summary(kernel,name+'/kernel', out_channels)
     return conv
 
 def max_pooling(input_data, kernel_height, kernel_width, strides=[1,2,2,1], padding='SAME', name=None):
@@ -67,5 +69,29 @@ def fc(input_data, in_channels, out_channels, regularization=True, name=None):
         tf.constant_initializer(0.1)
     )
     fc = tf.nn.relu(tf.matmul(input_data,weights)+biases, name=name)
+    ut._activation_summary(fc)
+    return fc
+
+def fc_sigmoid(input_data, in_channels, out_channels, regularization=True, name=None):
+    if regularization is True:
+        weights = ut._variable_with_weight_decay(
+            'weights',
+            [in_channels,out_channels],
+            tf.truncated_normal_initializer(stddev=0.05),
+            0.001
+        )
+    else:
+        weights = ut._variable_with_weight_decay(
+            'weights',
+            [in_channels,out_channels],
+            tf.truncated_normal_initializer(stddev=0.05),
+            0.0
+        )
+    biases = ut._variable_on_gpu(
+        'biases',
+        [out_channels],
+        tf.constant_initializer(0.1)
+    )
+    fc = tf.nn.sigmoid(tf.matmul(input_data,weights)+biases, name=name)
     ut._activation_summary(fc)
     return fc

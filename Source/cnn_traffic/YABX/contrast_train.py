@@ -1,0 +1,80 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import tensorflow as tf
+
+from six.moves import xrange
+from datetime import datetime
+import argparse
+import time
+import os
+import numpy as np
+
+import losses
+import utils as ut
+import cnn
+import ann
+import record as rec
+import config as conf
+
+FLAGS = tf.app.flags.FLAGS
+
+def train():
+    with tf.Graph().as_default():
+        global_step = tf.Variable(0, trainable=False)
+
+        ltoday, mtoday, htoday, mtomorrow = rec.data_inputs(
+            FLAGS.train_input_path,
+            FLAGS.train_batch_size,
+            conf.shape_dict,
+            30
+        )
+        predictions = ann.ann(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
+        reality = tf.reshape(mtomorrow, predictions.get_shape())
+        loss = losses.total_loss(predictions, reality, losses.mse_loss)
+        train_step = ut.train(loss, global_step, conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
+
+        saver = tf.train.Saver(tf.global_variables())
+        summary_op = tf.summary.merge_all()
+        
+        init = tf.global_variables_initializer()
+        sess = tf.Session()
+        sess.run(init)
+
+        tf.train.start_queue_runners(sess=sess)
+
+        summary_writer = tf.summary.FileWriter(FLAGS.train_dir, sess.graph)
+
+        loss_list = []
+
+        for step in xrange(FLAGS.epoch*conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN + 1):
+            start_time = time.time()
+            _, loss_val = sess.run([train_step, loss])
+            duration = time.time() - start_time
+
+            assert not np.isnan(loss_val), 'Model diverged with loss = NaN'
+            loss_list.append(loss_val)
+
+            if step % conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN == 0:
+                num_examples_per_step = FLAGS.train_batch_size
+                examples_per_sec = 0 #num_examples_per_step / duration
+                sec_per_batch = float(duration)
+                average_loss_value = np.mean(loss_list)
+                loss_list.clear()
+                format_str = ('%s: epoch %d, loss = %.2f (%.1f examples/sec; %.3f '
+                              'sec/batch)')
+                print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
+                summary_str = sess.run(summary_op)
+                summary_writer.add_summary(summary_str, step)
+            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*100) == 0:
+                checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
+                saver.save(sess, checkpoint_path, global_step=step)
+
+def main(argv=None):
+    train()
+
+if __name__ == '__main__':
+    tf.app.run()

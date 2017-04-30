@@ -149,10 +149,10 @@ def read_and_decode(filename, default, shape):
         mid_tomorrow = tf.cast(mid_tomorrow, tf.float32)
         return low_today, mid_today, high_today, mid_tomorrow
 
-def inputs(record_path, batch_size, min_after_dequeue, default=False, random=True):
+def test_inputs(record_path, batch_size, shape, min_after_dequeue):
     pass
 
-def train_input(record_path, batch_size, shape, min_after_dequeue, random=True):
+def data_inputs(record_path, batch_size, shape, min_after_dequeue, random=True):
     low_today, mid_today, high_today, mid_tomorrow = read_and_decode(record_path, False, shape)
     if random is True:
         ltoday_batch, mtoday_batch, htoday_batch, mtomorrow_batch = tf.train.shuffle_batch(
