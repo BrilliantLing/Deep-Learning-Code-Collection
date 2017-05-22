@@ -25,7 +25,7 @@ def cnn(input_data, out_channels, batch_size):
     pool2 = ops.max_pooling(conv2, 2, 2, padding='VALID', name='m_pool2')
 
     with tf.variable_scope('conv3') as scope:
-        conv3= ops.conv2d(pool2, 3, 5, 32, 32, padding='VALID', name=scope.name)
+        conv3= ops.conv2d(pool2, 3, 5, 32, 32, padding='VALID' ,name=scope.name)
     pool3 = ops.max_pooling(conv2, 2, 2, padding='VALID', name='pool3')
 
     with tf.variable_scope('fc4'):
@@ -35,7 +35,7 @@ def cnn(input_data, out_channels, batch_size):
             'weights',
             [dim,out_channels],
             tf.truncated_normal_initializer(stddev=0.05),
-            0.0
+            0.001
         )
         biases = ut._variable_on_gpu(
             'biases',

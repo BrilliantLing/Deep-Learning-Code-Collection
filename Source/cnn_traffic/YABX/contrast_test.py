@@ -34,10 +34,11 @@ def test():
             30,
             False
         )
-        predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
+        #predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
+        predictions = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
+        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
+        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
         saver = tf.train.Saver()
         #print(1)
         sess = tf.Session()
@@ -54,7 +55,7 @@ def test():
         rer_list = []
         step = 0
         tf.train.start_queue_runners(sess=sess)
-        while step < num_epoch:
+        while step < 38:
             #predictions = tf.add(tf.multiply(predictions, today_max_list[step]-today_min_list[step]), today_min_list[step])
             #reality = tf.add(tf.multiply(reality,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
                 #print(1)

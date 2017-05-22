@@ -30,7 +30,8 @@ def train():
             FLAGS.train_input_path,
             FLAGS.train_batch_size,
             conf.shape_dict,
-            30
+            30,
+            False
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
@@ -73,7 +74,7 @@ def train():
                 print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
-            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*100 + 1) == 0:
+            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*30 + 1) == 0:
                 checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
         

@@ -19,7 +19,6 @@ import tensorflow as tf
 from PIL import Image
 
 import preprocess as pp
-import matlab
 
 def create_numpy_record(matrix, target_dir, filename):
     np.save(matrix, target_dir+filename)
@@ -42,13 +41,10 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         today_data = today_data[variable_name]
         low_today = low_process(today_data, [2, 29, 28], 72, 288)
         low_today, _, _ = pp.normalize(low_today)
-        matlab.save_matrix('D:\\Test\\new\\ltoday'+str(i)+'.mat',low_today,'lowtoday')
         mid_today = mid_process(today_data, [2, 29, 28], 72, 288)
         mid_today, _, _  = pp.normalize(mid_today)
-        matlab.save_matrix('D:\\Test\\new\\mtoday'+str(i)+'.mat',mid_today,'midtoday')
         high_today = high_process(today_data, [2, 29, 28], 72, 288)
         high_today, _, _  = pp.normalize(high_today)
-        matlab.save_matrix('D:\\Test\\new\\htoday'+str(i)+'.mat',high_today,'hightoday')
         low_today = low_today.tostring()
         mid_today = mid_today.tostring()
         high_today = high_today.tostring()
@@ -68,9 +64,6 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
             )
         )
         writer.write(example.SerializeToString())
-        
-        
-        matlab.save_matrix('D:\\Test\\new\\ltoday'+str(i)+'.mat',low_today,'lowtoday')
         print('today:'+today_filenames[i]+' tomorrow:'+tomorrow_filenames[i]+' have been processed.')
     writer.close()
 
@@ -100,7 +93,6 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
         tomorrow_max_list.append(tomorrow_max)
         tomorrow_min_list.append(tomorrow_min)
         tomorrow = tomorrow.tostring()
-        
         example = tf.train.Example(
             features = tf.train.Features(
                 feature = {

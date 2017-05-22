@@ -30,14 +30,14 @@ def test():
             FLAGS.test_input_path,
             FLAGS.test_batch_size,
             conf.shape_dict,
-            0
+            30,
+            False
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
+        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
+        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
         
-        print(today_max_list)
         #summary_op = tf.summary.merge_all()
 
         saver = tf.train.Saver()
@@ -62,35 +62,20 @@ def test():
                 #print(1)
             #mse_op = losses.mse_loss(predictions, reality)
             #rer_op = losses.relative_er(predictions, reality)
-            mtoday_data = sess.run(mtoday)
-            matlab.save_matrix('D:\\Test\\test\\'+str(step)+'.mat',mtoday_data,'data')
             pred ,real = sess.run([predictions, reality])
-            pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
-            pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.MID_WIDTH])
-            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'.mat'),pred_matrix,'pred_m')
-            real_matrix = real * (tomorrow_max_list[step]-tomorrow_min_list[step]) + tomorrow_min_list[step]
-            real_matrix = np.reshape(real_matrix,[conf.HEIGHT, conf.MID_WIDTH])
-            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'r.mat'),real_matrix,'real_m')
-
+            # pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
+            # pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.MID_WIDTH])
+            # matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'.mat'),pred_matrix,'speed')
             # print(pred_matrix)
             pred = tf.add(tf.multiply(pred, today_max_list[step]-today_min_list[step]), today_min_list[step])
             real = tf.add(tf.multiply(real,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
             #p, r = sess.run(pred,real)
             #print(p)
             #print('+', r)
-            # pred_data,real_data = sess.run(pred,real)
-            # pred_matrix = pred_data * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
-            # pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.MID_WIDTH])
-            # matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'.mat'),pred_matrix,'pred_t')
-            # real_matrix = pred * (tomorrow_max_list[step]-tomorrow_min_list[step]) + tomorrow_min_list[step]
-            # real_matrix = np.reshape(real_matrix,[conf.HEIGHT, conf.MID_WIDTH])
-            # matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'r.mat'),real_matrix,'speed_t')
-
             mse_op = losses.mse_loss(pred, real)
             rer_op = losses.relative_er(pred, real)
-            #mre = sum(sum(np.abs(pred_matrix-real_matrix)/real_matrix))/(32*54)
             mse, rer = sess.run([mse_op,rer_op])
-            print('mse: ', mse, '    rer: ',rer)
+            #print('mse:', mse, '    rer:',rer)
             #print(predictions)
             mse_list.append(mse)
             rer_list.append(rer)
