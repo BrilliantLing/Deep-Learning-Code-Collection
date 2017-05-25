@@ -25,6 +25,8 @@ tf.app.flags.DEFINE_integer('num_examples', 465,
                             """Number of examples to run.""")
 tf.app.flags.DEFINE_boolean('run_once', False,
                          """Whether to run eval only once.""")
+tf.app.flags.DEFINE_string('checkpoint_dir', './train_data',
+                           """Directory where to read model checkpoints.""")                         
 
 def eval_once(saver, summary_writer, top_k_op, summary_op):
     with tf.Session() as sess:
