@@ -195,7 +195,7 @@ def cnn_model(input_images):
 
 def loss(logits,labels):
     labels = tf.cast(labels,tf.int64)
-    cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits,labels))
+    cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits,labels=labels))
     tf.add_to_collection('losses', cross_entropy)
     return tf.add_n(tf.get_collection('losses'), name='total_loss')
     #return cross_entropy
