@@ -60,7 +60,7 @@ def train():
             assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
             if step % 465 == 0:
-                num_examples_per_step = FLAGS.train_batch_size
+                num_examples_per_step = FLAGS.batch_size
                 examples_per_sec = 0 #num_examples_per_step / duration
                 sec_per_batch = float(duration)
                 average_loss_value = np.mean(loss_list)
@@ -68,7 +68,7 @@ def train():
                 loss_list.clear()
                 format_str = ('%s: epoch %d, loss = %.4f (%.1f examples/sec; %.3f '
                               'sec/batch)')
-                print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
+                print (format_str % (datetime.now(), step/465, average_loss_value, examples_per_sec, sec_per_batch))
             
             if step % (465*30 + 1) == 0:
                 checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
