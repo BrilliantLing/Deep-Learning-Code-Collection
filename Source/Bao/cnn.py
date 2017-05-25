@@ -114,7 +114,7 @@ def cnn_model(input_images):
     with tf.variable_scope('conv1') as scope:
         kernel = _variable_with_weight_decay_gpu(
             'weights',
-            shape = [5,5,3,24],
+            shape = [5,5,1,24],
             stddev=5e-2,
             wd=0.0
         )
