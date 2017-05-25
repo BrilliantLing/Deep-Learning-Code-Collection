@@ -160,7 +160,7 @@ def data_inputs(record_path, batch_size, shape, min_after_dequeue, random=True):
     return ltoday_batch, mtoday_batch, htoday_batch, mtomorrow_batch
 
 def main():
-    create_tfrecord('./train/','./','train.tfrecords','img_gray')
+    create_tfrecord('./new/','./','train.tfrecords','img_gray')
 
 if __name__ == '__main__':
     main()
