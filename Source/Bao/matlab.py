@@ -11,8 +11,6 @@ import scipy.io as sio
 import numpy as np
 import tensorflow as tf
 
-import preprocess as pp
-
 def read_matfile(filename, variable_name):
     mat = sio.loadmat(filename)
     mat = mat[variable_name]
