@@ -22,7 +22,7 @@ def create_records(data_dir,target_dir,record_name):
         class_path = data_dir + name + '/'
         for image_name in os.listdir(class_path):
             image_path = class_path + image_name
-            print image_path
+            print(image_path)
             image = Image.open(image_path)
             image = image.resize((28,28))
             image_raw = image.tobytes()
