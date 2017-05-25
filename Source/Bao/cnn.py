@@ -19,7 +19,7 @@ import read_record
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('use_fp16', False,"""Train the model using fp16.""")
-tf.app.flags.DEFINE_integer('batch_size',10,"""Number of examples a batch have""")
+tf.app.flags.DEFINE_integer('batch_size',1,"""Number of examples a batch have""")
 
 IMAGE_SIZE = 28
 NUM_CLASSES = 10
