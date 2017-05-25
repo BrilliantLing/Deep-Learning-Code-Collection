@@ -69,29 +69,29 @@ def cnn_merge(input_data, in_channels, out_channels, batch_size,is_train):
     return fc1
 
 def cnn_with_branch(low_data, mid_data, high_data, out_channels, batch_size, is_train=True):
-    with tf.variable_scope('l_conv1') as scope:
-        lconv1 = ops.conv2d(low_data, 3, 5, 1, 16, padding='VALID',kernel_summary=True,name=scope.name) 
+        with tf.variable_scope('l_conv1') as scope:
+        lconv1 = ops.conv2d(low_data, 5, 5, 1, 16, padding='VALID',kernel_summary=True,name=scope.name) 
     with tf.variable_scope('l_conv2') as scope:
-        lconv2 = ops.conv2d(lconv1, 3, 5, 16, 32, padding='VALID', name=scope.name)  
-    lpool2 = ops.max_pooling(lconv2, 2, 2, padding='VALID', name='l_pool2')
+        lconv2 = ops.conv2d(lconv1, 5, 5, 16, 32, padding='VALID', name=scope.name)  
+    lpool2 = ops.max_pooling(lconv2, 4, 2, strides=[1,4,2,1], padding='VALID', name='l_pool2')
     with tf.variable_scope('l_conv3') as scope:
-        lconv3= ops.conv2d(lpool2, 3, 3, 32, 64, padding='VALID', name=scope.name)
+        lconv3= ops.conv2d(lpool2, 5, 3, 32, 64, padding='VALID', name=scope.name)
 
     with tf.variable_scope('m_conv1') as scope:
-        mconv1 = ops.conv2d(mid_data, 3, 13, 1, 16, padding='VALID',kernel_summary=True,name=scope.name)   
+        mconv1 = ops.conv2d(mid_data, 5, 13, 1, 16, padding='VALID',kernel_summary=True,name=scope.name)   
     with tf.variable_scope('m_conv2') as scope:
-        mconv2 = ops.conv2d(mconv1, 3, 11, 16, 32, padding='VALID', name=scope.name)   
-    mpool2 = ops.max_pooling(mconv2, 2, 2 ,padding='VALID', name='m_pool2')
+        mconv2 = ops.conv2d(mconv1, 5, 11, 16, 32, padding='VALID', name=scope.name)   
+    mpool2 = ops.max_pooling(mconv2, 4, 2, strides=[1,4,2,1], padding='VALID', name='m_pool2')
     with tf.variable_scope('m_conv3') as scope:
-        mconv3= ops.conv2d(mpool2, 3, 5, 32, 64, padding='VALID', name=scope.name)
+        mconv3= ops.conv2d(mpool2, 5, 5, 32, 64, padding='VALID', name=scope.name)
 
     with tf.variable_scope('h_conv1') as scope:
-        hconv1 = ops.conv2d(high_data, 3, 21, 1, 16, padding='VALID',kernel_summary=True,name=scope.name)  
+        hconv1 = ops.conv2d(high_data, 5, 21, 1, 16, padding='VALID',kernel_summary=True,name=scope.name)  
     with tf.variable_scope('h_conv2') as scope:
-        hconv2 = ops.conv2d(hconv1, 3, 17, 16, 32, padding='VALID', name=scope.name)    
-    hpool2 = ops.max_pooling(hconv2, 2, 2 ,padding='VALID', name='h_pool2')
+        hconv2 = ops.conv2d(hconv1, 5, 17, 16, 32, padding='VALID', name=scope.name)    
+    hpool2 = ops.max_pooling(hconv2, 4, 2, strides=[1,4,2,1], padding='VALID', name='h_pool2')
     with tf.variable_scope('h_conv3') as scope:
-        hconv3= ops.conv2d(hpool2, 3, 7, 32, 64, padding='VALID', name=scope.name)
+        hconv3= ops.conv2d(hpool2, 5, 7, 32, 64, padding='VALID', name=scope.name)
 
     merge = tf.concat([lconv3, mconv3, hconv3], 3)
     merge_channels = merge.get_shape()[3].value

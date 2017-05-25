@@ -19,12 +19,12 @@ import read_record
 FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_boolean('use_fp16', False,"""Train the model using fp16.""")
-tf.app.flags.DEFINE_integer('batch_size',25,"""Number of examples a batch have""")
+tf.app.flags.DEFINE_integer('batch_size',10,"""Number of examples a batch have""")
 
-IMAGE_SIZE = 58
-NUM_CLASSES = 4
+IMAGE_SIZE = 28
+NUM_CLASSES = 10
 
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 344
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 465
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 344
 
 MOVING_AVERAGE_DECAY = 0.9999 

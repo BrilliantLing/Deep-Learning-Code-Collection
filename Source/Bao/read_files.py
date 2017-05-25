@@ -22,7 +22,7 @@ tf.app.flags.DEFINE_string('data_dir', '/media/storage/Data/traffic_sign_data/',
 
 def create_record():
     writer = tf.python_io.TFRecordWriter('train.tfrecords')
-    for index, name in enumerate(('0','1','2','3')):
+    for index, name in enumerate(('0','1','2','3','4','5','6','7','8','9')):
         class_path = FLAGS.train_dir + name + "/"
         for img_name in os.listdir(class_path):
             img_path = class_path + img_name

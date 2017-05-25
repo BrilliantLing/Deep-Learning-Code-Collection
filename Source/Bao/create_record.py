@@ -18,12 +18,13 @@ def _bytes_feature(value):
 def create_records(data_dir,target_dir,record_name):
     #cwd = os.getcwd()
     writer = tf.python_io.TFRecordWriter(target_dir + record_name)
-    for index,name in enumerate(('0','1','2','3')):
+    for index,name in enumerate(('0','1','2','3','4','5','6','7','8','9')):
         class_path = data_dir + name + '/'
         for image_name in os.listdir(class_path):
             image_path = class_path + image_name
+            print image_path
             image = Image.open(image_path)
-            image = image.resize((58,58))
+            image = image.resize((28,28))
             image_raw = image.tobytes()
             example = tf.train.Example(features=tf.train.Features(
                 feature={
@@ -34,11 +35,11 @@ def create_records(data_dir,target_dir,record_name):
             writer.write(example.SerializeToString())
     writer.close()
 
-logo_data = '/media/storage/Data/traffic_sign_data/'
+train_data = './train/'
 test_data = '/media/storage/Data/traffic_sign_data_test/'
 
 def main(_):
-    create_records(test_data, test_data, 'test.tfrecords')
+    create_records(train_data, '.', 'train.tfrecords')
 
 if __name__ == '__main__':
     tf.app.run()
