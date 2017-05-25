@@ -19,7 +19,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('data_dir','.',"""Directory where the Data stored""")
 tf.app.flags.DEFINE_string('train_dir','./train_data',"""Directory where to write event logs and checkpoint.""")
-tf.app.flags.DEFINE_integer('max_steps',50000,"""Number of batches to run""")
+tf.app.flags.DEFINE_integer('max_steps',500000,"""Number of batches to run""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,"""Whether to log device placement.""")
 tf.app.flags.DEFINE_string('checkpoint_dir', './train_data',
                            """Directory where to read model checkpoints.""")
