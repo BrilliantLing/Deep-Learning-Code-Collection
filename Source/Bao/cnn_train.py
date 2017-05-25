@@ -51,6 +51,7 @@ def train():
         
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir,sess.graph)
 
+        loss_list = []
         for step in xrange(FLAGS.max_steps):
             start_time = time.time()
             _, loss_value = sess.run([train_op, loss])
@@ -58,18 +59,19 @@ def train():
 
             assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
-            if step % 1000 == 0:
-                num_examples_per_step = FLAGS.batch_size
-                examples_per_sec = num_examples_per_step / duration
+            if step % conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN == 0:
+                num_examples_per_step = FLAGS.train_batch_size
+                examples_per_sec = 0 #num_examples_per_step / duration
                 sec_per_batch = float(duration)
-
-                format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f '
-                      'sec/batch)')
-                print (format_str % (datetime.now(), step, loss_value,
-                             examples_per_sec, sec_per_batch))
-                summary_str = sess.run(summary_op)
-                summary_writer.add_summary(summary_str, step)
-                checkpoint_path = os.path.join(FLAGS.train_dir, 'model.ckpt')
+                average_loss_value = np.mean(loss_list)
+                #total_loss_list.append(average_loss_value)
+                loss_list.clear()
+                format_str = ('%s: epoch %d, loss = %.4f (%.1f examples/sec; %.3f '
+                              'sec/batch)')
+                print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
+            
+            if step % (465*30 + 1) == 0:
+                checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
 
 def main(argv=None):
