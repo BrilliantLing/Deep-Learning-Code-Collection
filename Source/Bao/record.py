@@ -38,7 +38,7 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
         classpath = data_dir + name + '/'
         for filename in os.listdir(classpath):
             filepath = classpath + filename
-            print(image_path)
+            #print(filepath)
             data = sio.loadmat(filepath)
             #image = image.resize((28,28))
             #image_raw = image.tobytes()
@@ -51,7 +51,7 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
                 }
             ))
             writer.write(example.SerializeToString())
-            print(image_path,'has been processed')
+            print(filepath,'has been processed')
     writer.close()
 
 def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, process):
