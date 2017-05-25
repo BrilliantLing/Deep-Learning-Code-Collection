@@ -85,6 +85,7 @@ def evaluate():
 
         summary_writer = tf.summary.FileWriter(FLAGS.eval_dir, g)
 
+        print(1)
         while True:
             eval_once(saver, summary_writer, top_k_op, summary_op)
             if FLAGS.run_once:
