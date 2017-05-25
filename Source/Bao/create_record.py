@@ -39,7 +39,7 @@ train_data = './train/'
 test_data = '/media/storage/Data/traffic_sign_data_test/'
 
 def main(_):
-    create_records(train_data, '.', 'train.tfrecords')
+    create_records(train_data, './', 'train.tfrecords')
 
 if __name__ == '__main__':
     tf.app.run()
