@@ -58,6 +58,7 @@ def train():
             duration = time.time() - start_time
 
             assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
+            loss_list.append(loss_val)
 
             if step % 465 == 0:
                 num_examples_per_step = FLAGS.batch_size
