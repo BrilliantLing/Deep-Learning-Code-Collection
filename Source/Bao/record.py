@@ -35,8 +35,8 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
         os.remove(target_dir + record_name)
     writer = tf.python_io.TFRecordWriter(target_dir + record_name)
     for index,name in enumerate(('0','1','2','3','4','5','6','7','8','9')):
-        class_path = data_dir + name + '/'
-        for filename in os.listdir(class_path):
+        classpath = data_dir + name + '/'
+        for filename in os.listdir(classpath):
             filepath = classpath + filename
             print(image_path)
             data = sio.loadmat(filepath)
