@@ -78,7 +78,7 @@ def _variable_with_weight_decay_gpu(name,shape,stddev,wd):
     return var
 
 def inputs(image,label,batch_size,random=True):
-    mqe = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * 0.3)
+    mqe = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * 0.1)
     if random is not True:
         images, label_batch = tf.train.batch(
             [image, label],

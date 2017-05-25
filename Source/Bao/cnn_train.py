@@ -28,7 +28,7 @@ def train():
         #print(2)
         global_step = tf.Variable(0, trainable=False)
         
-        images, labels = read_record.read_and_decode(FLAGS.data_dir+'/logo.tfrecords')
+        images, labels = read_record.read_and_decode(FLAGS.data_dir+'/train.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size)
         #print(3)
         logits = cnn.cnn_model(image_batch)
