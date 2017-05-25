@@ -51,29 +51,7 @@ def create_tfrecord(data_dir, target_dir, record_name, variable_name):
                 }
             ))
             writer.write(example.SerializeToString())
-    writer.close()
-    # filenames = os.listdir(data_dir)
-    # for i in range(len(filenames)):
-    #     data = sio.loadmat(data_dirs+today_filenames[i])
-    #     data = data[variable_name]
-    #     low_today = low_today.tostring()
-    #     mid_today = mid_today.tostring()
-    #     high_today = high_today.tostring()
-    #     example = tf.train.Example(
-    #         features = tf.train.Features(
-    #             feature = {
-    #                 "low_today" :_bytes_feature(low_today),
-    #                 "mid_today" :_bytes_feature(mid_today),
-    #                 "high_today" :_bytes_feature(high_today),
-    #                 "mid_tomorrow" :_bytes_feature(mid_tomorrow)
-    #             }
-    #         )
-    #     )
-    #     writer.write(example.SerializeToString())
-        
-        
-        #matlab.save_matrix('D:\\Test\\new\\ltoday'+str(i)+'.mat',low_today,'lowtoday')
-        print('today:'+today_filenames[i]+' tomorrow:'+tomorrow_filenames[i]+' have been processed.')
+            print(image_path,'has been processed')
     writer.close()
 
 def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, process):
@@ -180,3 +158,9 @@ def data_inputs(record_path, batch_size, shape, min_after_dequeue, random=True):
             capacity=min_after_dequeue + 30
         )
     return ltoday_batch, mtoday_batch, htoday_batch, mtomorrow_batch
+
+def main():
+    create_tfrecord('./train/','./','train.tfrecords','img_gray')
+
+if __name__ == '__main__':
+    main()
