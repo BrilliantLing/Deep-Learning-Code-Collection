@@ -71,7 +71,7 @@ def eval_once(saver, summary_writer, top_k_op, summary_op):
 def evaluate():
     with tf.Graph().as_default() as g:
         eval_data = FLAGS.eval_data == 'test'
-        images, labels = read_record.read_and_decode('./train.tfrecord')
+        images, labels = read_record.read_and_decode('./train.tfrecords')
         image_batch, label_batch = cnn.inputs(images,labels,FLAGS.batch_size,False)
 
         logits = cnn.cnn_model(image_batch)
