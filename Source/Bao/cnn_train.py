@@ -59,7 +59,7 @@ def train():
 
             assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
-            if step % conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN == 0:
+            if step % 465 == 0:
                 num_examples_per_step = FLAGS.train_batch_size
                 examples_per_sec = 0 #num_examples_per_step / duration
                 sec_per_batch = float(duration)
