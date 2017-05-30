@@ -35,8 +35,8 @@ def test():
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
+        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
+        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
         
         #summary_op = tf.summary.merge_all()
 
@@ -75,8 +75,8 @@ def test():
             mse_op = losses.mse_loss(pred, real)
             rer_op = losses.relative_er(pred, real)
             mse, rer = sess.run([mse_op,rer_op])
-            #print('mse:', mse, '    rer:',rer)
-            #print(predictions)
+            print('mse:', mse, '    rer:',rer)
+            print(predictions)
             mse_list.append(mse)
             rer_list.append(rer)
             step += 1

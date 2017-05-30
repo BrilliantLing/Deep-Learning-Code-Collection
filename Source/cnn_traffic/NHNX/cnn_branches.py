@@ -69,7 +69,7 @@ def cnn_merge(input_data, in_channels, out_channels, batch_size,is_train):
     return fc1
 
 def cnn_with_branch(low_data, mid_data, high_data, out_channels, batch_size, is_train=True):
-        with tf.variable_scope('l_conv1') as scope:
+    with tf.variable_scope('l_conv1') as scope:
         lconv1 = ops.conv2d(low_data, 5, 5, 1, 16, padding='VALID',kernel_summary=True,name=scope.name) 
     with tf.variable_scope('l_conv2') as scope:
         lconv2 = ops.conv2d(lconv1, 5, 5, 16, 32, padding='VALID', name=scope.name)  

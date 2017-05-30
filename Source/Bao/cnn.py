@@ -140,6 +140,7 @@ def cnn_model(input_images):
         _activation_summary(conv2)
 
     #pool2 = max_pool_2x2(conv2,'pool2')
+    
 
     with tf.variable_scope('conv3') as scope:
         kernel = _variable_with_weight_decay_gpu(

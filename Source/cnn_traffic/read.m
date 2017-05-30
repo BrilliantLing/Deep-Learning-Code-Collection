@@ -1,15 +1,16 @@
-path='C:\Users\Tianyang\Desktop\深度学习的毕业设计\数据处理速度mat';
+path='D:\Test\2011NHNX_speed';
+target='D:\Test\2011NHNX_speed_fix';
 a=dir(fullfile(path,'*.mat'));
 liuliangshuju=ones(35,288);
 for  i=1:length(a);
     load(fullfile(path,a(i).name));
-    sudushuju=sudu;
-    for j=1:35
+    sudushuju=speed;
+    for j=1:72
         for k=1:288
             if isnan(sudushuju(j,k))
-                sudushuju(j,k)=50+20*rand;
+                sudushuju(j,k)=50+20*rand-10;
             end
-            if sudushuju(j,k)==1&&j~=1&&j~=35
+            if (sudushuju(j,k)==1||sudushuju(j,k)==0)&&j~=1&&j~=72
                % if j==1
                 %    sudushuju(j,k)=sudushuju(j+1,k);
                 %end
@@ -17,12 +18,24 @@ for  i=1:length(a);
                  %   sudushuju(j,k)=sudushuju(j-1,k);
                 %end
                 if sudushuju(j,k)==1
-                    sudushuju(j,k)=(sudushuju(j+1,k)+sudushuju(j-1,k))/2;
+                    if sudushuju(j+1,k)>=1&&sudushuju(j-1,k)>=0
+                        sudushuju(j,k)=(sudushuju(j+1,k)+sudushuju(j-1,k))/2;
+                    end
                 end
-            end            
+                if sudushuju(j,k)==0
+                    if sudushuju(j+1,k)>=1&&sudushuju(j-1,k)>=0
+                        sudushuju(j,k)=(sudushuju(j+1,k)+sudushuju(j-1,k))/2;
+                    end
+                end
+            %elseif sudushuju(j,k)==0
+            %    sudushuju(j,k)=50+20*rand-10;
+            end
+            if sudushuju(j,k)==0||sudushuju(j,k)==1
+                sudushuju(j,k)=50+20*rand-10;
+            end
         end
     end
-    for j=1:35
+    for j=1:72
         for k=1:288
             if isnan(sudushuju(j,k))
                 sudushuju(j,k)=50+20*rand;
@@ -30,12 +43,12 @@ for  i=1:length(a);
         end
     end
     if i<10
-        save (['00',num2str(i),'.mat'], 'sudushuju')
+        save (fullfile(target,['00',num2str(i),'.mat']), 'sudushuju')
     end
     if i>=10&&i<100
-        save (['0',num2str(i),'.mat'] ,'sudushuju')
+        save (fullfile(target,['0',num2str(i),'.mat']),'sudushuju')
     end
     if i>=100
-        save([num2str(i),'.mat'],'sudushuju')
+        save(fullfile(target,[num2str(i),'.mat']),'sudushuju')
     end            
 end

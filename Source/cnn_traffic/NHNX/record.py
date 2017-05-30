@@ -39,18 +39,18 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
     for i in range(len(today_filenames)):
         today_data = sio.loadmat(data_dirs[0]+today_filenames[i])
         today_data = today_data[variable_name]
-        low_today = low_process(today_data, [2, 29, 28], 72, 288)
+        low_today = low_process(today_data, [], 72, 288)
         low_today, _, _ = pp.normalize(low_today)
-        mid_today = mid_process(today_data, [2, 29, 28], 72, 288)
+        mid_today = mid_process(today_data, [], 72, 288)
         mid_today, _, _  = pp.normalize(mid_today)
-        high_today = high_process(today_data, [2, 29, 28], 72, 288)
+        high_today = high_process(today_data, [], 72, 288)
         high_today, _, _  = pp.normalize(high_today)
         low_today = low_today.tostring()
         mid_today = mid_today.tostring()
         high_today = high_today.tostring()
         tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
         tomorrow_data = tomorrow_data[variable_name]
-        mid_tomorrow = mid_process(tomorrow_data, [2, 29, 28], 72, 288)
+        mid_tomorrow = mid_process(tomorrow_data, [], 72, 288)
         mid_tomorrow, _, _ = pp.normalize(mid_tomorrow)
         mid_tomorrow = mid_tomorrow.tostring()
         example = tf.train.Example(
@@ -81,14 +81,14 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
     for i in range(len(today_filenames)):
         today_data = sio.loadmat(data_dirs[0]+today_filenames[i])
         today_data = today_data[variable_name]
-        today = process(today_data, [2, 29, 28], 72, 288)
+        today = process(today_data, [], 72, 288)
         today, today_max, today_min = pp.normalize(today)
         today_max_list.append(today_max)
         today_min_list.append(today_min)
         today = today.tostring()
         tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
         tomorrow_data = tomorrow_data[variable_name]
-        tomorrow = process(tomorrow_data, [2, 29, 28], 72, 288)
+        tomorrow = process(tomorrow_data, [], 72, 288)
         tomorrow, tomorrow_max, tomorrow_min = pp.normalize(tomorrow)
         tomorrow_max_list.append(tomorrow_max)
         tomorrow_min_list.append(tomorrow_min)

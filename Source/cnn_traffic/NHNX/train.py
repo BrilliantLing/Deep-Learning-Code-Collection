@@ -73,7 +73,7 @@ def train():
                 print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
-            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*100 + 1) == 0:
+            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*30 + 1) == 0:
                 checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
         
