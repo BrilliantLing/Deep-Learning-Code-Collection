@@ -55,7 +55,7 @@ def test():
         rer_list = []
         step = 0
         tf.train.start_queue_runners(sess=sess)
-        while step < 38:
+        while step < 40:
             #predictions = tf.add(tf.multiply(predictions, today_max_list[step]-today_min_list[step]), today_min_list[step])
             #reality = tf.add(tf.multiply(reality,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
                 #print(1)

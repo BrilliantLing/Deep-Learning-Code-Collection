@@ -38,7 +38,7 @@ def conv2d(input_data, kernel_height, kernel_width, in_channels, out_channels, s
     conv = tf.nn.relu(conv, name=name)
     ut._activation_summary(conv)
     if kernel_summary is True:
-        ut._kernel_summary(kernel,name+'/kernel', out_channels)
+        ut._kernel_summary(kernel,name+'/kernel', out_channels, kernel_width, kernel_height)
     return conv
 
 def max_pooling(input_data, kernel_height, kernel_width, strides=[1,2,2,1], padding='SAME', name=None):

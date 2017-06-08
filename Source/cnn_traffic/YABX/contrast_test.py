@@ -18,6 +18,7 @@ import losses
 import utils as ut
 import cnn
 import ann
+import cnn_square
 import record as rec
 import config as conf
 import matlab
@@ -35,7 +36,8 @@ def test():
             False
         )
         #predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
-        predictions = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
+        #predictions = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
+        predictions = cnn_square.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
         today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
         tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
