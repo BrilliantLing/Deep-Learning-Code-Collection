@@ -31,16 +31,17 @@ def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_process, mid_process, high_process):
-    if(os.path.exists(target_dir + record_name)):
+    target_file = os.path.join(target_dir, record_name)
+    if(os.path.exists(target_file)):
         print('The tfrecord file exist, it will be deleted')
-        os.remove(target_dir + record_name)
-    writer = tf.python_io.TFRecordWriter(target_dir + record_name)
+        os.remove(target_file)
+    writer = tf.python_io.TFRecordWriter(target_file)
     today_filenames = os.listdir(data_dirs[0])
     tomorrow_filenames = os.listdir(data_dirs[1])
     lastlast_filenames = os.listdir(data_dirs[2])
     last_filenames = os.listdir(data_dirs[3])
     for i in range(len(today_filenames)):
-        today_data = sio.loadmat(data_dirs[0]+today_filenames[i])
+        today_data = sio.loadmat(os.path.join(data_dirs[0],today_filenames[i]))
         today_data = today_data[variable_name]
         low_today = low_process(today_data, [], 72, 288)
         low_today, _, _ = pp.normalize(low_today)
@@ -54,7 +55,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         low_today = low_today.tostring()
         mid_today = mid_today.tostring()
         high_today = high_today.tostring()
-        tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
+        tomorrow_data = sio.loadmat(os.path.join(data_dirs[1], tomorrow_filenames[i]))
         tomorrow_data = tomorrow_data[variable_name]
         # mid_tomorrow = mid_process(tomorrow_data, [], 72, 288)
         # mid_tomorrow, _, _ = pp.normalize(mid_tomorrow)
@@ -62,7 +63,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         tomorrow = high_process(tomorrow_data,[],72,288)
         tomorrow, _, _ = pp.normalize(tomorrow)
         tomorrow = tomorrow.tostring()
-        last = sio.loadmat(data_dirs[3]+last_filenames[i])
+        last = sio.loadmat(os.path.join(data_dirs[3], last_filenames[i]))
         last = last[variable_name]
         low_last = low_process(last, [], 72, 288)
         low_last, _, _ = pp.normalize(low_last)
@@ -73,7 +74,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         low_last = low_last.tostring()
         mid_last = mid_last.tostring()
         high_last = high_last.tostring()
-        lastlast = sio.loadmat(data_dirs[2]+lastlast_filenames[i])
+        lastlast = sio.loadmat(os.path.join(data_dirs[2], lastlast_filenames[i]))
         lastlast = lastlast[variable_name]
         low_lastlast = low_process(lastlast, [], 72, 288)
         low_lastlast, _, _ = pp.normalize(low_lastlast)
@@ -108,44 +109,36 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
     writer.close()
 
 def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, process):
-    if(os.path.exists(target_dir + record_name)):
+    target_file = os.path.join(target_dir, record_name)
+    if(os.path.exists(target_file)):
         print('The tfrecord file exist, it will be deleted')
-        os.remove(target_dir + record_name)
-    writer = tf.python_io.TFRecordWriter(target_dir + record_name)
+        os.remove(target_file)
+    writer = tf.python_io.TFRecordWriter(target_file)
     today_filenames = os.listdir(data_dirs[0])
     tomorrow_filenames = os.listdir(data_dirs[1])
-    today_max_list = []
-    today_min_list = []
-    tomorrow_max_list = []
-    tomorrow_min_list = []
+
     for i in range(len(today_filenames)):
-        today_data = sio.loadmat(data_dirs[0]+today_filenames[i])
+        today_data = sio.loadmat(os.path.join(data_dirs[0],today_filenames[i]))
         today_data = today_data[variable_name]
-        today = process(today_data, [2, 29, 28], 72, 288)
-        today, today_max, today_min = pp.normalize(today)
-        today_max_list.append(today_max)
-        today_min_list.append(today_min)
+        today = process(today_data, [], 72, 288)
+        today, _, _ = pp.normalize(today)
         today = today.tostring()
-        tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
-        tomorrow_data = tomorrow_data[variable_name]
-        tomorrow = process(tomorrow_data, [2, 29, 28], 72, 288)
-        tomorrow, tomorrow_max, tomorrow_min = pp.normalize(tomorrow)
-        tomorrow_max_list.append(tomorrow_max)
-        tomorrow_min_list.append(tomorrow_min)
-        tomorrow = tomorrow.tostring()
-        
-        example = tf.train.Example(
+
+        tomorrow_data = sio.loadmat(os.path.join(data_dirs[1], tomorrow_filenames[i]))
+        tomorrow = process(tomorrow_data, [], 72, 288)
+        tomorrow, _, _ = pp.normalize(tomorrow)
+        tomorrow.tostring()
+        example = tf.train.Feature(
             features = tf.train.Features(
-                feature = {
-                    "today":_bytes_feature(today),
-                    "tomorrow":_bytes_feature(tomorrow)
+                {
+                    'high_today': _bytes_feature(today),
+                    'tomorrow': _bytes_feature(tomorrow)
                 }
             )
         )
         writer.write(example.SerializeToString())
         print('today:'+today_filenames[i]+' tomorrow:'+tomorrow_filenames[i]+' have been processed.')
-    writer.close()
-    return today_max_list, today_min_list, tomorrow_max_list, tomorrow_min_list
+        writer.close()
 
 def read_and_decode(filename, default, shape):
     filename_queue = tf.train.string_input_producer([filename], shuffle=False)
@@ -155,16 +148,16 @@ def read_and_decode(filename, default, shape):
         features = tf.parse_single_example(
             serialized_example,
             features = {
-                "today":tf.FixedLenFeature([],tf.string),
+                "high_today":tf.FixedLenFeature([],tf.string),
                 "tomorrow":tf.FixedLenFeature([],tf.string)
             }
         )
-        today = tf.decode_raw(features['today'],tf.float64)
-        today = tf.reshape(today, shape['mid'])
+        today = tf.decode_raw(features['high_today'],tf.float64)
+        today = tf.reshape(today, shape['high'])
         today = tf.cast(today,tf.float32)
         tomorrow = tf.decode_raw(features['tomorrow'],tf.float64)
-        tomorrow = tf.reshape(tomorrow, shape['mid'])
-        tomorrow = tf.cast(tomorrow, tf.float64)
+        tomorrow = tf.reshape(tomorrow, shape['high'])
+        tomorrow = tf.cast(tomorrow, tf.float32)
         return today, tommorrow
     else:
         features = tf.parse_single_example(

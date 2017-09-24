@@ -34,9 +34,11 @@ def get_normalization_param(data_dir,variable_name,process):
     max_list = []
     min_list = []
     for i in range(len(filenames)):
-        data = sio.loadmat(data_dir+filenames[i])
+        filepath = os.path.join(data_dir,filenames[i])
+        print(filepath)
+        data = sio.loadmat(filepath)
         data = data[variable_name]
-        data = process(data, [2, 29, 28], 72, 288)
+        data = process(data, [], 72, 288)
         _, max_val, min_val = pp.normalize(data)
         max_list.append(max_val)
         min_list.append(min_val)

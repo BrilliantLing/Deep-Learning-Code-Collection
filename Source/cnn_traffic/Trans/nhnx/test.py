@@ -35,10 +35,10 @@ def test():
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.HIGH_WIDTH,FLAGS.test_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'speed',pp.high_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'speed',pp.high_resolution_speed_data_process)
+        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.test_today_mat_dir,'sudushuju',pp.high_resolution_speed_data_process)
+        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.test_tomorrow_mat_dir,'sudushuju',pp.high_resolution_speed_data_process)
         
-        print(today_max_list)
+        #print(today_max_list)
         #summary_op = tf.summary.merge_all()
 
         saver = tf.train.Saver()

@@ -1,6 +1,6 @@
 clear all
-data_path = 'D:\MasterDL\data_set\traffic_data\2011_nhnx_speed\new\train\tomorrow';
-augment_path = 'D:\MasterDL\data_set\traffic_data\2011_nhnx_speed\new\train\tomorrow_augment';
+data_path = 'D:\MasterDL\data_set\traffic_data\2011_nhnx_speed\new\train\common\tomorrow';
+augment_path = 'D:\MasterDL\data_set\traffic_data\2011_nhnx_speed\new\train\common\tomorrow_augment';
 data_files = dir(fullfile(data_path,'*.mat'));
 for i=1:length(data_files)
     load(fullfile(data_path,data_files(i).name));
@@ -13,7 +13,7 @@ for i=1:length(data_files)
     if i>=10&&i<100
         save(fullfile(augment_path, ['00',num2str(i),'.mat']) ,'speed')
     end
-    if i>=100&&i<=320
+    if i>=100&&i<=334
         save(fullfile(augment_path, ['0',num2str(i),'.mat']) ,'speed')
     end
     if i>=1000

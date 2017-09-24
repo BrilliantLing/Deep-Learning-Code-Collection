@@ -18,7 +18,7 @@ import losses
 
 def cnn(input_data, out_channels, batch_size):
     with tf.variable_scope('conv1') as scope:
-        conv1 = ops.conv2d(input_data, 3, 13, 1, 16, padding='VALID', kernel_summary=True, name=scope.name)
+        conv1 = ops.conv2d(input_data, 3, 13, 3, 16, padding='VALID', kernel_summary=True, name=scope.name)
     
     with tf.variable_scope('conv2') as scope:
         conv2 = ops.conv2d(conv1, 3, 11, 16, 32, padding='VALID', kernel_summary=True, name=scope.name)   

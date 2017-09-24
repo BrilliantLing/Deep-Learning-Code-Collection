@@ -89,7 +89,7 @@ def cnn_with_branch(low_data, mid_data, high_data, out_channels, batch_size, is_
         hconv1 = ops.conv2d(high_data, 5, 21, 3, 16, padding='VALID',kernel_summary=True,name=scope.name)  
     with tf.variable_scope('h_conv2') as scope:
         hconv2 = ops.conv2d(hconv1, 5, 17, 16, 32, padding='VALID', name=scope.name)    
-    hpool2 = ops.max_pooling(hconv2, 4, 2, strides=[1,4,2,1], padding='VALID', name='h_pool2')
+    hpool2 = ops.max_pooling(hconv2, 4, 4, strides=[1,4,4,1], padding='VALID', name='h_pool2')
     with tf.variable_scope('h_conv3') as scope:
         hconv3= ops.conv2d(hpool2, 5, 7, 32, 64, padding='VALID', name=scope.name)
 
