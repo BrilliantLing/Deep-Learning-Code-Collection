@@ -22,13 +22,14 @@ def _activation_summary(x):
     tf.summary.histogram(tensor_name + '/activations',x)
     tf.summary.scalar(tensor_name + '/sparsity',tf.nn.zero_fraction(x))
 
-def _kernel_summary(kernel, name, num):
+def _kernel_summary(kernel, name, num, kernel_width, kernel_height):
     with tf.variable_scope(name):
         kernel_min = tf.reduce_min(kernel)
         kernel_max = tf.reduce_max(kernel)
         kernel_norm = (kernel - kernel_min) / (kernel_max - kernel_min)
-        kernel_transposed = tf.transpose(kernel_norm,[3,0,1,2])
-        tf.summary.image('filters',kernel_transposed,max_outputs=num)
+        kernel_transposed = tf.transpose(kernel_norm, [3,0,1,2])
+        kernel_reshape = tf.reshape(kernel_transposed, [-1, kernel_height, kernel_width, 1])
+        tf.summary.image('filters', kernel_reshape, max_outputs=num)
 
 def _variable_on_cpu(name,shape,initializer):
     with tf.device('/cpu:0'):
@@ -58,8 +59,11 @@ def save_list(filename, list):
     file = open(filename,'w')
     pass
 
-def train(loss, global_step, num_samples):
-    learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*100, 0.45,staircase=True)
+def train(loss, global_step, num_samples, mutable_lr=True):
+    if mutable_lr is True:
+        learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*100, 0.5,staircase=True)
+    else:
+        learning_rate = 0.1
     tf.summary.scalar('learning_rate', learning_rate)
     train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     return train_step

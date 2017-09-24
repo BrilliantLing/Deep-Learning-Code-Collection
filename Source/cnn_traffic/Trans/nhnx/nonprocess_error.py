@@ -31,10 +31,10 @@ def test():
             0,
             False
         )
-        predictions = mtoday
+        predictions = htoday
         reality = mtomorrow
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
+        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'speed',pp.high_resolution_speed_data_process)
+        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'speed',pp.high_resolution_speed_data_process)
 
         sess = tf.Session()
         tf.train.start_queue_runners(sess=sess)

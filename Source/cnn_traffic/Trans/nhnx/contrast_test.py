@@ -1,27 +1,26 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
+import argparse
+import math
+import os
+import time
+from datetime import datetime
+
+import numpy as np
 import tensorflow as tf
 
-from six.moves import xrange
-from datetime import datetime
-import argparse
-import time
-import os
-import math
-import numpy as np
-
-import losses
-import utils as ut
-import cnn
 import ann
-import record as rec
+import cnn
+import cnn_square
 import config as conf
+import losses
 import matlab
 import preprocess as pp
+import record as rec
+import utils as ut
+from six.moves import xrange
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -34,8 +33,9 @@ def test():
             30,
             False
         )
-        predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
-        #predictions = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
+        #predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
+        predictions,conv1,conv2,conv3 = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
+        #predictions = cnn_square.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
         today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
         tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
@@ -55,7 +55,7 @@ def test():
         rer_list = []
         step = 0
         tf.train.start_queue_runners(sess=sess)
-        while step < 40:
+        while step < 38:
             #predictions = tf.add(tf.multiply(predictions, today_max_list[step]-today_min_list[step]), today_min_list[step])
             #reality = tf.add(tf.multiply(reality,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
                 #print(1)
@@ -75,6 +75,15 @@ def test():
 
         print('mse = ', np.mean(mse_list))
         print('rer = ', np.mean(rer_list))
+        #conv1,conv2,conv3 = sess.run([conv1,conv2,conv3])
+        #matlab.save_matrix(FLAGS.train_dir+'conv1.mat',conv1,'conv1')
+        # matlab.save_matrix(FLAGS.train_dir+'conv2.mat',conv2,'conv2')
+        # matlab.save_matrix(FLAGS.train_dir+'conv3.mat',conv3,'conv3')
+        pred = tf.reshape(pred, [32, 54])
+        real = tf.reshape(real, [32, 54])
+        pred ,real = sess.run([pred, real])
+        matlab.save_matrix(FLAGS.train_dir+'pred.mat',pred,'pred')
+        matlab.save_matrix(FLAGS.train_dir+'real.mat',real,'real')
 
 
 def main():
@@ -82,4 +91,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    

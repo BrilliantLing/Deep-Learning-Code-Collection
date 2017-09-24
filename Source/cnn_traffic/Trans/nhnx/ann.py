@@ -20,10 +20,10 @@ def ann(input_data, outchannels, batch_size):
     reshape = tf.reshape(input_data, [batch_size, -1])
     dim = reshape.get_shape()[1].value
     with tf.variable_scope('fc1') as scope:
-        fc1 = ops.fc(reshape, dim, 1000, True, scope.name)
+        fc1 = ops.fc(reshape, dim, 1500, True, scope.name)
     
     with tf.variable_scope('fc2') as scope:
-        fc2 = ops.fc(fc1, 1000, outchannels, True, scope.name)
+        fc2 = ops.fc(fc1, 1500, outchannels, True, scope.name)
 
     # with tf.variable_scope('fc3') as scope:
     #     fc3 = ops.fc(fc2, 1000, outchannels, True, scope.name)

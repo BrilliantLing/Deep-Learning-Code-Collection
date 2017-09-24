@@ -17,6 +17,7 @@ import numpy as np
 import losses
 import utils as ut
 import cnn_branches
+import ann
 import record as rec
 import config as conf
 import matlab
@@ -34,10 +35,12 @@ def test():
             False
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
+        #predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
         reality = tf.reshape(mtomorrow, predictions.get_shape())
         today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
         tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
         
+        print(today_max_list)
         #summary_op = tf.summary.merge_all()
 
         saver = tf.train.Saver()
@@ -62,6 +65,8 @@ def test():
                 #print(1)
             #mse_op = losses.mse_loss(predictions, reality)
             #rer_op = losses.relative_er(predictions, reality)
+            mtoday_data = sess.run(mtoday)
+            matlab.save_matrix('D:\\Test\\train\\'+str(step)+'.mat',mtoday_data,'data')
             pred ,real = sess.run([predictions, reality])
             # pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
             # pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.MID_WIDTH])
@@ -75,7 +80,7 @@ def test():
             mse_op = losses.mse_loss(pred, real)
             rer_op = losses.relative_er(pred, real)
             mse, rer = sess.run([mse_op,rer_op])
-            #print('mse:', mse, '    rer:',rer)
+            print('step:',step,'    mse:', mse, '    rer:',rer)
             #print(predictions)
             mse_list.append(mse)
             rer_list.append(rer)
@@ -83,7 +88,11 @@ def test():
 
         print('mse = ', np.mean(mse_list))
         print('rer = ', np.mean(rer_list))
-
+        count = 0
+        for item in rer_list:
+            if item>=0.1:
+                count = count+1
+        print("count:",count)
 
 def main():
     test()

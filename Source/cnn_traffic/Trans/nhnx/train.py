@@ -26,14 +26,15 @@ def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0, trainable=False)
 
-        ltoday, mtoday, htoday, mtomorrow = rec.data_inputs(
+        ltoday, mtoday, htoday, tomorrow = rec.data_inputs(
             FLAGS.train_input_path,
             FLAGS.train_batch_size,
             conf.shape_dict,
-            30
+            30,
+            False
         )
-        predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
-        reality = tf.reshape(mtomorrow, predictions.get_shape())
+        predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        reality = tf.reshape(tomorrow, predictions.get_shape())
         loss = losses.total_loss(predictions, reality, losses.mse_loss)
         train_step = ut.train(loss, global_step, conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
 
