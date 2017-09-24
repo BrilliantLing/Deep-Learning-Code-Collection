@@ -91,8 +91,8 @@ def high_resolution_speed_data_process(data, useless_detectors, start, end):
                 data[i][j] = 1
     for i in range(data.shape[1]):
         if i % 2 == 0:
-            data[:,i] = (data[:,i] + data[:,i+1] + data[:,i+2]) / 3
-    data = data[:,::3]
+            data[:,i] = (data[:,i] + data[:,i+1]) / 2
+    data = data[:,::2]
     return data
 
 def normalize(data):
