@@ -31,16 +31,17 @@ def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_process, mid_process, high_process):
-    if(os.path.exists(target_dir + record_name)):
+    target_file = os.path.join(target_dir, record_name)
+    if(os.path.exists(target_file)):
         print('The tfrecord file exist, it will be deleted')
-        os.remove(target_dir + record_name)
-    writer = tf.python_io.TFRecordWriter(target_dir + record_name)
+        os.remove(target_file)
+    writer = tf.python_io.TFRecordWriter(target_file)
     today_filenames = os.listdir(data_dirs[0])
     tomorrow_filenames = os.listdir(data_dirs[1])
     lastlast_filenames = os.listdir(data_dirs[2])
     last_filenames = os.listdir(data_dirs[3])
     for i in range(len(today_filenames)):
-        today_data = sio.loadmat(data_dirs[0]+today_filenames[i])
+        today_data = sio.loadmat(os.path.join(data_dirs[0],today_filenames[i]))
         today_data = today_data[variable_name]
         low_today = low_process(today_data, [], 72, 288)
         low_today, _, _ = pp.normalize(low_today)
@@ -54,7 +55,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         low_today = low_today.tostring()
         mid_today = mid_today.tostring()
         high_today = high_today.tostring()
-        tomorrow_data = sio.loadmat(data_dirs[1]+tomorrow_filenames[i])
+        tomorrow_data = sio.loadmat(os.path.join(data_dirs[1],tomorrow_filenames[i]))
         tomorrow_data = tomorrow_data[variable_name]
         # mid_tomorrow = mid_process(tomorrow_data, [], 72, 288)
         # mid_tomorrow, _, _ = pp.normalize(mid_tomorrow)
@@ -62,7 +63,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         tomorrow = high_process(tomorrow_data,[],72,288)
         tomorrow, _, _ = pp.normalize(tomorrow)
         tomorrow = tomorrow.tostring()
-        last = sio.loadmat(data_dirs[3]+last_filenames[i])
+        last = sio.loadmat(os.path.join(data_dirs[3],last_filenames[i]))
         last = last[variable_name]
         low_last = low_process(last, [], 72, 288)
         low_last, _, _ = pp.normalize(low_last)
@@ -73,7 +74,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         low_last = low_last.tostring()
         mid_last = mid_last.tostring()
         high_last = high_last.tostring()
-        lastlast = sio.loadmat(data_dirs[2]+lastlast_filenames[i])
+        lastlast = sio.loadmat(os.path.join(data_dirs[2],lastlast_filenames[i]))
         lastlast = lastlast[variable_name]
         low_lastlast = low_process(lastlast, [], 72, 288)
         low_lastlast, _, _ = pp.normalize(low_lastlast)
@@ -108,7 +109,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
     writer.close()
 
 def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, process):
-    if(os.path.exists(target_dir + record_name)):
+    if(os.path.exists(os.path.join(target_dir + record_name))):
         print('The tfrecord file exist, it will be deleted')
         os.remove(target_dir + record_name)
     writer = tf.python_io.TFRecordWriter(target_dir + record_name)

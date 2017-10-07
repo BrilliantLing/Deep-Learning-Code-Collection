@@ -26,19 +26,20 @@ FLAGS = tf.app.flags.FLAGS
 
 def test():
     with tf.Graph().as_default() as g:
-        ltoday, mtoday, htoday, mtomorrow = rec.data_inputs(
+        today, tomorrow = rec.data_inputs(
             FLAGS.test_input_path,
             FLAGS.test_batch_size,
             conf.shape_dict,
             30,
-            False
+            default=True,
+            random=False
         )
-        #predictions = ann.ann(mtoday,conf.HEIGHT*conf.MID_WIDTH,FLAGS.test_batch_size)
-        predictions,conv1,conv2,conv3 = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
-        #predictions = cnn_square.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
-        reality = tf.reshape(mtomorrow, predictions.get_shape())
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.train_today_mat_dir,'speed',pp.mid_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.train_tomorrow_mat_dir,'speed',pp.mid_resolution_speed_data_process)
+        #predictions = ann.ann(today,conf.HEIGHT*conf.HIGH_WIDTH,FLAGS.test_batch_size)
+        #predictions,conv1,conv2,conv3 = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
+        predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        reality = tf.reshape(tomorrow, predictions.get_shape())
+        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.common_test_today_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
+        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.common_test_tomorrow_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
         saver = tf.train.Saver()
         #print(1)
         sess = tf.Session()
@@ -55,7 +56,7 @@ def test():
         rer_list = []
         step = 0
         tf.train.start_queue_runners(sess=sess)
-        while step < 38:
+        while step < FLAGS.num_examples_test:
             #predictions = tf.add(tf.multiply(predictions, today_max_list[step]-today_min_list[step]), today_min_list[step])
             #reality = tf.add(tf.multiply(reality,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
                 #print(1)
@@ -79,11 +80,11 @@ def test():
         #matlab.save_matrix(FLAGS.train_dir+'conv1.mat',conv1,'conv1')
         # matlab.save_matrix(FLAGS.train_dir+'conv2.mat',conv2,'conv2')
         # matlab.save_matrix(FLAGS.train_dir+'conv3.mat',conv3,'conv3')
-        pred = tf.reshape(pred, [32, 54])
-        real = tf.reshape(real, [32, 54])
+        pred = tf.reshape(pred, [72, 108])
+        real = tf.reshape(real, [72, 108])
         pred ,real = sess.run([pred, real])
-        matlab.save_matrix(FLAGS.train_dir+'pred.mat',pred,'pred')
-        matlab.save_matrix(FLAGS.train_dir+'real.mat',real,'real')
+        matlab.save_matrix(os.path.join(FLAGS.test_dir, 'pred.mat'),pred,'pred')
+        matlab.save_matrix(os.path.join(FLAGS.test_dir, 'real.mat'),real,'real')
 
 
 def main():

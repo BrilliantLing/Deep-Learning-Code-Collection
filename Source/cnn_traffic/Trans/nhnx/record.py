@@ -125,12 +125,13 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
         today = today.tostring()
 
         tomorrow_data = sio.loadmat(os.path.join(data_dirs[1], tomorrow_filenames[i]))
+        tomorrow_data = tomorrow_data[variable_name]
         tomorrow = process(tomorrow_data, [], 72, 288)
         tomorrow, _, _ = pp.normalize(tomorrow)
-        tomorrow.tostring()
-        example = tf.train.Feature(
+        tomorrow = tomorrow.tostring()
+        example = tf.train.Example(
             features = tf.train.Features(
-                {
+                feature = {                  
                     'high_today': _bytes_feature(today),
                     'tomorrow': _bytes_feature(tomorrow)
                 }
@@ -138,7 +139,7 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
         )
         writer.write(example.SerializeToString())
         print('today:'+today_filenames[i]+' tomorrow:'+tomorrow_filenames[i]+' have been processed.')
-        writer.close()
+    writer.close()
 
 def read_and_decode(filename, default, shape):
     filename_queue = tf.train.string_input_producer([filename], shuffle=False)
@@ -158,7 +159,7 @@ def read_and_decode(filename, default, shape):
         tomorrow = tf.decode_raw(features['tomorrow'],tf.float64)
         tomorrow = tf.reshape(tomorrow, shape['high'])
         tomorrow = tf.cast(tomorrow, tf.float32)
-        return today, tommorrow
+        return today, tomorrow
     else:
         features = tf.parse_single_example(
             serialized_example,
@@ -213,21 +214,40 @@ def read_and_decode(filename, default, shape):
 def test_inputs(record_path, batch_size, shape, min_after_dequeue):
     pass
 
-def data_inputs(record_path, batch_size, shape, min_after_dequeue, random=True):
-    low_today, mid_today, high_today, tomorrow = read_and_decode(record_path, False, shape)
-    if random is True:
-        ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch = tf.train.shuffle_batch(
-            [low_today, mid_today, high_today, tomorrow], 
-            batch_size=batch_size,
-            num_threads=8,
-            capacity=min_after_dequeue + 30,
-            min_after_dequeue=min_after_dequeue
-        )
+def data_inputs(record_path, batch_size, shape, min_after_dequeue, default=False, random=True):
+    if default is True:
+        today, tomorrow = read_and_decode(record_path, True, shape)
+        if random is True:
+            today_batch, tomorrow_batch = tf.train.shuffle_batch(
+                [today, tomorrow], 
+                batch_size=batch_size,
+                num_threads=8,
+                capacity=min_after_dequeue + 30,
+                min_after_dequeue=min_after_dequeue
+            )
+        else:
+            today_batch, tomorrow_batch = tf.train.batch(
+                [today, tomorrow],
+                batch_size=batch_size,
+                num_threads=8,
+                capacity=min_after_dequeue + 30
+            )
+        return today_batch, tomorrow_batch
     else:
-        ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch = tf.train.batch(
-            [low_today, mid_today, high_today, tomorrow],
-            batch_size=batch_size,
-            num_threads=8,
-            capacity=min_after_dequeue + 30
-        )
-    return ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch
+        low_today, mid_today, high_today, tomorrow = read_and_decode(record_path, False, shape)
+        if random is True:
+            ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch = tf.train.shuffle_batch(
+                [low_today, mid_today, high_today, tomorrow], 
+                batch_size=batch_size,
+                num_threads=8,
+                capacity=min_after_dequeue + 30,
+                min_after_dequeue=min_after_dequeue
+            )
+        else:
+            ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch = tf.train.batch(
+                [low_today, mid_today, high_today, tomorrow],
+                batch_size=batch_size,
+                num_threads=8,
+                capacity=min_after_dequeue + 30
+            )
+        return ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch 

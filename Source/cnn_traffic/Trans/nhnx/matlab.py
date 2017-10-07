@@ -21,7 +21,7 @@ def read_matfile(filename, variable_name):
 def read_matfile_from_dir(data_dir,variable_name, shape):
     mat_array=np.array([])
     for filename in os.listdir(data_dir):
-        mat = read_matfile(data_dir+filename, variable_name)
+        mat = read_matfile(os.path.join(data_dir, filename), variable_name)
         mat_array = np.append(mat_array, mat)
     mat_array = np.reshape(mat_array, shape)
     return mat_array

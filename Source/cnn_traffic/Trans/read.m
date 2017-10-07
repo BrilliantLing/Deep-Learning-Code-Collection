@@ -1,16 +1,16 @@
-path='D:\Test\2011NHNX_speed';
-target='D:\Test\2011NHNX_speed_fix';
+path='D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\original';
+target='D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\fix';
 a=dir(fullfile(path,'*.mat'));
 liuliangshuju=ones(35,288);
-for  i=1:length(a);
+for  i=1:length(a)
     load(fullfile(path,a(i).name));
     sudushuju=speed;
-    for j=1:72
+    for j=1:43
         for k=1:288
             if isnan(sudushuju(j,k))
                 sudushuju(j,k)=50+20*rand-10;
             end
-            if (sudushuju(j,k)==1||sudushuju(j,k)==0)&&j~=1&&j~=72
+            if (sudushuju(j,k)==1||sudushuju(j,k)==0)&&j~=1&&j~=43
                % if j==1
                 %    sudushuju(j,k)=sudushuju(j+1,k);
                 %end
@@ -35,7 +35,7 @@ for  i=1:length(a);
             end
         end
     end
-    for j=1:72
+    for j=1:43
         for k=1:288
             if isnan(sudushuju(j,k))
                 sudushuju(j,k)=50+20*rand;
