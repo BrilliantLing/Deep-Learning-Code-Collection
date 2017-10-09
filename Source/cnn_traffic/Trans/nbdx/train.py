@@ -33,6 +33,7 @@ def train():
             30,
             False
         )
+        print(ltoday, mtoday, htoday)
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
         loss = losses.total_loss(predictions, reality, losses.mse_loss)
@@ -74,11 +75,11 @@ def train():
                 print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
-            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*20 + 1) == 0:
+            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*10 + 1) == 0:
                 checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
         
-        matlab.save_matrix(FLAGS.train_dir+'cnn_branch_loss.mat', total_loss_list, 'cnn_branch_loss')
+        matlab.save_matrix(os.path.join(FLAGS.train_dir, 'cnn_branch_loss.mat'), total_loss_list, 'cnn_branch_loss')
 
 def main(argv=None):
     train()
