@@ -34,9 +34,9 @@ def test():
             default=True,
             random=False
         )
-        #predictions = ann.ann(today,conf.HEIGHT*conf.HIGH_WIDTH,FLAGS.test_batch_size)
+        predictions = ann.ann(today,conf.HEIGHT*conf.HIGH_WIDTH,FLAGS.test_batch_size)
         #predictions,conv1,conv2,conv3 = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
-        predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        #predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
         today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.common_test_today_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
         tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.common_test_tomorrow_mat_dir,'sudushuju',pp.mid_resolution_speed_data_process)
@@ -63,6 +63,12 @@ def test():
             #mse_op = losses.mse_loss(predictions, reality)
             #rer_op = losses.relative_er(predictions, reality)
             pred ,real = sess.run([predictions, reality])
+            pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
+            pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])
+            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step+1)+'.mat'),pred_matrix,'pred_m')
+            real_matrix = real * (tomorrow_max_list[step]-tomorrow_min_list[step]) + tomorrow_min_list[step]
+            real_matrix = np.reshape(real_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])
+            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step+1)+'r.mat'),real_matrix,'real_m')
             pred = tf.add(tf.multiply(pred, today_max_list[step]-today_min_list[step]), today_min_list[step])
             real = tf.add(tf.multiply(real,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
             mse_op = losses.mse_loss(pred, real)
@@ -83,9 +89,6 @@ def test():
         pred = tf.reshape(pred, [72, 108])
         real = tf.reshape(real, [72, 108])
         pred ,real = sess.run([pred, real])
-        matlab.save_matrix(os.path.join(FLAGS.test_dir, 'pred.mat'),pred,'pred')
-        matlab.save_matrix(os.path.join(FLAGS.test_dir, 'real.mat'),real,'real')
-
 
 def main():
     test()

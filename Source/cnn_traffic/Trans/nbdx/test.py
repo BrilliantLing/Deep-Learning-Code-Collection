@@ -68,10 +68,10 @@ def test():
             pred ,real = sess.run([predictions, reality])
             pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
             pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])
-            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'.mat'),pred_matrix,'pred_m')
+            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step+1)+'.mat'),pred_matrix,'pred_m')
             real_matrix = real * (tomorrow_max_list[step]-tomorrow_min_list[step]) + tomorrow_min_list[step]
             real_matrix = np.reshape(real_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])
-            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'r.mat'),real_matrix,'real_m')
+            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step+1)+'r.mat'),real_matrix,'real_m')
 
             # print(pred_matrix)
             pred = tf.add(tf.multiply(pred, today_max_list[step]-today_min_list[step]), today_min_list[step])

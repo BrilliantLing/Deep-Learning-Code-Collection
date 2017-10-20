@@ -64,7 +64,7 @@ def test():
             #mse_op = losses.mse_loss(predictions, reality)
             #rer_op = losses.relative_er(predictions, reality)
             mtoday_data = sess.run(mtoday)
-            matlab.save_matrix('D:\\Test\\test\\'+str(step)+'.mat',mtoday_data,'data')
+            #matlab.save_matrix('D:\\Test\\test\\'+str(step)+'.mat',mtoday_data,'data')
             pred ,real = sess.run([predictions, reality])
             pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
             pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])

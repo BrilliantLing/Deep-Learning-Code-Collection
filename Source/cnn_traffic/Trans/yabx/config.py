@@ -15,14 +15,14 @@ tf.app.flags.DEFINE_string('checkpoint_dir', 'D:\\MasterDL\\trans\\yabx\\checkpo
 tf.app.flags.DEFINE_string('train_input_path', 'D:\\MasterDL\\trans\yabx\\tfrecords\\train\\train.tfrecords', """The diretory where the input data for trainning saved in.""")
 tf.app.flags.DEFINE_string('test_input_path', 'D:\\MasterDL\\trans\yabx\\tfrecords\\test\\test.tfrecords', """The diretory where the input data for testing saved in.""")
 tf.app.flags.DEFINE_string('common_train_input_path', 'D:\\MasterDL\\trans\\yabx\\tfrecords\\common_train\\train.tfrecords', """To be done.""")
-tf.app.flags.DEFINE_string('common_test_input_path', 'D:\MasterDL\trans\yabx\tfrecords\common_test\\test.tfrecords',"""To be done.""")
+tf.app.flags.DEFINE_string('common_test_input_path', 'D:\\MasterDL\\trans\\yabx\\tfrecords\\common_test\\test.tfrecords',"""To be done.""")
 tf.app.flags.DEFINE_string('test_today_mat_dir','D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\test\\today\\',"""To be done""")
 tf.app.flags.DEFINE_string('test_tomorrow_mat_dir','D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\test\\tomorrow\\',"""To be done""")
 tf.app.flags.DEFINE_string('train_today_mat_dir','D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\train\\today\\',"""To be done""")
 tf.app.flags.DEFINE_string('train_tomorrow_mat_dir','D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\train\\tomorrow\\',"""To be done""")
 tf.app.flags.DEFINE_string('common_train_today_mat_dir', 'D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\common\\train\\today_augment\\', """To be done.""")
 tf.app.flags.DEFINE_string('common_train_tomorrow_mat_dir', 'D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\common\\train\\tomorrow_augment\\', """To be done.""")
-tf.app.flags.DEFINE_string('common_test_today_mat_dir', 'D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\common\\test\\today\\'."""To be done.""")
+tf.app.flags.DEFINE_string('common_test_today_mat_dir', 'D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\common\\test\\today\\',"""To be done.""")
 tf.app.flags.DEFINE_string('common_test_tomorrow_mat_dir', 'D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\common\\test\\tomorrow\\',"""To be done.""")
 
 

@@ -7,6 +7,7 @@ from __future__ import print_function
 import sklearn as skl
 import numpy as np
 import matlab
+import os
 
 
 from sklearn.neighbors import KNeighborsRegressor as KNR
@@ -15,6 +16,7 @@ today_train_data_dir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\knn\t
 tomorrow_train_data_dir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\knn\train\tomorrow'
 today_test_data_dir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\knn\test\today'
 tomorrow_test_data_dir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\knn\test\tomorrow'
+result_dir = r'D:\MasterDL\trans\yabx\knn_result'
 
 today_train_data = matlab.read_matfile_from_dir(today_train_data_dir, 'speed',[330,35*108])
 tomorrow_train_data = matlab.read_matfile_from_dir(tomorrow_train_data_dir, 'speed',[330,35*108])
@@ -24,6 +26,7 @@ reality = np.reshape(tomorrow_test_data,[1,30*35*108])
 KNN = KNR(n_neighbors=5)
 KNN.fit(today_train_data,today_train_data)
 predictions = KNN.predict(today_test_data)
+matlab.save_matrix(os.path.join(result_dir, 'knn_result.mat'), predictions, 'knn')
 predictions = np.reshape(predictions,[1,30*35*108])
 mse = ((reality-predictions)**2).mean()
 print(mse)

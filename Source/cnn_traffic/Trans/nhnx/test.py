@@ -31,7 +31,8 @@ def test():
             FLAGS.test_input_path,
             FLAGS.test_batch_size,
             conf.shape_dict,
-            0
+            0,
+            random = False
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.HIGH_WIDTH,FLAGS.test_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
