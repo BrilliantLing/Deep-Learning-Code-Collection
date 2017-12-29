@@ -28,7 +28,7 @@ def _kernel_summary(kernel, name, num, kernel_width, kernel_height):
         kernel_max = tf.reduce_max(kernel)
         kernel_norm = (kernel - kernel_min) / (kernel_max - kernel_min)
         kernel_transposed = tf.transpose(kernel_norm, [3,0,1,2])
-        kernel_reshape = tf.reshape(kernel_transposed, [-1, kernel_height, kernel_width, 1])
+        kernel_reshape = tf.reshape(kernel_transposed, [-1, kernel_height, kernel_width, 3])
         tf.summary.image('filters', kernel_reshape, max_outputs=num)
 
 def _variable_on_cpu(name,shape,initializer):

@@ -96,4 +96,5 @@ def cnn_with_branch(low_data, mid_data, high_data, out_channels, batch_size, is_
     merge = tf.concat([lpool3, mpool3, hpool3], 3)
     merge_channels = merge.get_shape()[3].value
     predictions = cnn_merge(merge, merge_channels, out_channels, batch_size, is_train)
+    predictions = tf.reshape(predictions, [1,35,108,1])
     return predictions, lconv1, mconv1, hconv1

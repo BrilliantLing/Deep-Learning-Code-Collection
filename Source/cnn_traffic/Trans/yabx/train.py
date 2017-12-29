@@ -26,55 +26,60 @@ def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0, trainable=False)
 
-        ltoday, mtoday, htoday, tomorrow = rec.data_inputs(
+        ltoday, mtoday, htoday, tomorrow, _, _, _, _, _ = rec.data_inputs(
             FLAGS.train_input_path,
             FLAGS.train_batch_size,
             conf.shape_dict,
             30,
+            False,
             False
         )
         predictions,_,_,_ = cnn_branches.cnn_with_branch(ltoday,mtoday,htoday,conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
-        loss = losses.total_loss(predictions, reality, losses.mse_loss)
+        mse = losses.mse_loss(predictions,reality)
+        loss = losses.total_loss(predictions, reality, losses.main_loss)
         train_step = ut.train(loss, global_step, conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
-
         saver = tf.train.Saver(tf.global_variables())
         summary_op = tf.summary.merge_all()
         
         init = tf.global_variables_initializer()
+        coord = tf.train.Coordinator()
         sess = tf.Session()
         #tf_debug.add_debug_tensor_watch(sess,'l_conv1')
         #sess = tf_debug.LocalCLIDebugWrapperSession(sess,)
         sess.run(init)
 
-        tf.train.start_queue_runners(sess=sess)
+        tf.train.start_queue_runners(sess=sess,coord=coord)
 
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir, sess.graph)
 
         loss_list = []
+        mse_list = []
         total_loss_list = []
 
         for step in xrange(FLAGS.epoch*conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN+1):
             start_time = time.time()
-            _, loss_val = sess.run([train_step, loss])
+            _, loss_val, mse_loss = sess.run([train_step, loss, mse])
             duration = time.time() - start_time
 
             assert not np.isnan(loss_val), 'Model diverged with loss = NaN'
             loss_list.append(loss_val)
+            mse_list.append(mse_loss)
 
             if step % conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN == 0:
                 num_examples_per_step = FLAGS.train_batch_size
                 examples_per_sec = 0 #num_examples_per_step / duration
                 sec_per_batch = float(duration)
                 average_loss_value = np.mean(loss_list)
+                average_mse_value = np.mean(mse_list)
                 total_loss_list.append(average_loss_value)
                 loss_list.clear()
-                format_str = ('%s: epoch %d, loss = %.4f (%.1f examples/sec; %.3f '
+                format_str = ('%s: epoch %d, loss = %.4f , mse = %.4f (%.1f examples/sec; %.3f '
                               'sec/batch)')
-                print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, examples_per_sec, sec_per_batch))
+                print (format_str % (datetime.now(), step/conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN, average_loss_value, average_mse_value, examples_per_sec, sec_per_batch))
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
-            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*20 + 1) == 0:
+            if step % (conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN*10 + 1) == 0:
                 checkpoint_path = os.path.join(FLAGS.checkpoint_dir, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
         

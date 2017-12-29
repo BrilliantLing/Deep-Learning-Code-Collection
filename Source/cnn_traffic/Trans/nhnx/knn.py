@@ -29,9 +29,11 @@ predictions = KNN.predict(today_test_data)
 matlab.save_matrix(os.path.join(target_dir,'knn_result.mat'), predictions, 'knn')
 predictions = np.reshape(predictions,[1,30*72*108])
 mse = ((reality-predictions)**2).mean()
-print(mse)
+print('mse:', mse)
 for i in range(0,30*72*108):
     if reality[0][i] == 0:
         reality[0][i]=1
 rer = np.mean(abs(reality-predictions)/reality)
-print(rer)
+mae = np.mean(abs(reality-predictions))
+print('mre:', rer)
+print('mae:', mae)

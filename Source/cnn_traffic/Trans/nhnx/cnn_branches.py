@@ -56,11 +56,11 @@ def cnn_high_resolution(input_data):
 
 def cnn_merge(input_data, in_channels, out_channels, batch_size,is_train):
     with tf.variable_scope('conv1') as scope:
-        conv1 = ops.conv2d(input_data, 3, 3, in_channels, 256, padding='VALID',name=scope.name)
+        conv1 = ops.conv2d(input_data, 3, 3, in_channels, 256, padding='VALID', kernel_summary=True, name=scope.name)
     pool1 = ops.max_pooling(conv1, 2, 2, name='pool1')
 
     with tf.variable_scope('conv2') as scope:
-        conv2 = ops.conv2d(pool1, 3, 3, 256, 256, padding='VALID', name=scope.name)
+        conv2 = ops.conv2d(pool1, 3, 3, 256, 256, padding='VALID', kernel_summary=True, name=scope.name)
     
     with tf.variable_scope('fc1') as scope:
         reshape = tf.reshape(conv2, [batch_size, -1])
@@ -70,30 +70,31 @@ def cnn_merge(input_data, in_channels, out_channels, batch_size,is_train):
 
 def cnn_with_branch(low_data, mid_data, high_data, out_channels, batch_size, is_train=True):
     with tf.variable_scope('l_conv1') as scope:
-        lconv1 = ops.conv2d(low_data, 5, 5, 3, 16, padding='VALID',kernel_summary=True,name=scope.name) 
+        lconv1 = ops.conv2d(low_data, 11, 3, 3, 16, padding='VALID',kernel_summary=True,name=scope.name) 
     with tf.variable_scope('l_conv2') as scope:
-        lconv2 = ops.conv2d(lconv1, 5, 5, 16, 32, padding='VALID', name=scope.name)  
-    lpool2 = ops.max_pooling(lconv2, 4, 2, strides=[1,4,2,1], padding='VALID', name='l_pool2')
+        lconv2 = ops.conv2d(lconv1, 10, 3, 16, 32, padding='VALID', kernel_summary=True, name=scope.name)  
     with tf.variable_scope('l_conv3') as scope:
-        lconv3= ops.conv2d(lpool2, 5, 3, 32, 64, padding='VALID', name=scope.name)
+        lconv3= ops.conv2d(lconv2, 9, 3, 32, 64, padding='VALID', kernel_summary=True, name=scope.name)
+    lpool3 = ops.max_pooling(lconv3, 3, 2, strides=[1, 3, 2, 1], padding='VALID', name='l_pool3')
 
     with tf.variable_scope('m_conv1') as scope:
-        mconv1 = ops.conv2d(mid_data, 5, 13, 3, 16, padding='VALID',kernel_summary=True,name=scope.name)   
+        mconv1 = ops.conv2d(mid_data, 11, 5, 3, 16, padding='VALID',kernel_summary=True,name=scope.name)   
     with tf.variable_scope('m_conv2') as scope:
-        mconv2 = ops.conv2d(mconv1, 5, 11, 16, 32, padding='VALID', name=scope.name)   
-    mpool2 = ops.max_pooling(mconv2, 4, 2, strides=[1,4,2,1], padding='VALID', name='m_pool2')
+        mconv2 = ops.conv2d(mconv1, 10, 4, 16, 32, padding='VALID', kernel_summary=True, name=scope.name)   
     with tf.variable_scope('m_conv3') as scope:
-        mconv3= ops.conv2d(mpool2, 5, 5, 32, 64, padding='VALID', name=scope.name)
+        mconv3= ops.conv2d(mconv2, 9, 3, 32, 64, padding='VALID', kernel_summary=True, name=scope.name)
+    mpool3 = ops.max_pooling(mconv3, 3, 3, strides=[1,3,3,1], padding='VALID', name='m_pool3')
 
     with tf.variable_scope('h_conv1') as scope:
-        hconv1 = ops.conv2d(high_data, 5, 21, 3, 16, padding='VALID',kernel_summary=True,name=scope.name)  
+        hconv1 = ops.conv2d(high_data, 11, 9, 3, 16, padding='VALID',kernel_summary=True,name=scope.name)  
     with tf.variable_scope('h_conv2') as scope:
-        hconv2 = ops.conv2d(hconv1, 5, 17, 16, 32, padding='VALID', name=scope.name)    
-    hpool2 = ops.max_pooling(hconv2, 4, 4, strides=[1,4,4,1], padding='VALID', name='h_pool2')
+        hconv2 = ops.conv2d(hconv1, 10, 7, 16, 32, padding='VALID', kernel_summary=True, name=scope.name) 
     with tf.variable_scope('h_conv3') as scope:
-        hconv3= ops.conv2d(hpool2, 5, 7, 32, 64, padding='VALID', name=scope.name)
+        hconv3= ops.conv2d(hconv2, 9, 5, 32, 64, padding='VALID', kernel_summary=True, name=scope.name)
+    hpool3 = ops.max_pooling(hconv3, 3, 6, strides=[1,3,6,1], padding='VALID', name='h_pool3')
 
-    merge = tf.concat([lconv3, mconv3, hconv3], 3)
+
+    merge = tf.concat([lpool3, mpool3, hpool3], 3)
     merge_channels = merge.get_shape()[3].value
     predictions = cnn_merge(merge, merge_channels, out_channels, batch_size, is_train)
     return predictions, lconv1, mconv1, hconv1

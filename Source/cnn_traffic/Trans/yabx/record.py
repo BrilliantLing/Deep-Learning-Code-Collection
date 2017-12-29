@@ -30,6 +30,9 @@ def _int64list_feature(value):
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
+def _float_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
 def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_process, mid_process, high_process):
     target_file = os.path.join(target_dir, record_name)
     if(os.path.exists(target_file)):
@@ -50,7 +53,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         mid_today, _, _  = pp.normalize(mid_today)
         matlab.save_matrix('D:\\Test\\new\\mtoday'+str(i)+'.mat',mid_today,'midtoday')
         high_today = high_process(today_data, [], 72, 288)
-        high_today, _, _  = pp.normalize(high_today)
+        high_today, today_max, today_min  = pp.normalize(high_today)
         matlab.save_matrix('D:\\Test\\new\\htoday'+str(i)+'.mat',high_today,'hightoday')
         low_today = low_today.tostring()
         mid_today = mid_today.tostring()
@@ -61,7 +64,7 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
         # mid_tomorrow, _, _ = pp.normalize(mid_tomorrow)
         # mid_tomorrow = mid_tomorrow.tostring()
         tomorrow = high_process(tomorrow_data,[],72,288)
-        tomorrow, _, _ = pp.normalize(tomorrow)
+        tomorrow, tomorrow_max, tomorrow_min = pp.normalize(tomorrow)
         tomorrow = tomorrow.tostring()
         last = sio.loadmat(os.path.join(data_dirs[3],last_filenames[i]))
         last = last[variable_name]
@@ -97,7 +100,11 @@ def create_tfrecord(data_dirs, target_dir, record_name, variable_name, low_proce
                     "low_today" :_bytes_feature(low_today),
                     "mid_today" :_bytes_feature(mid_today),
                     "high_today" :_bytes_feature(high_today),
-                    "tomorrow" :_bytes_feature(tomorrow)
+                    "tomorrow" :_bytes_feature(tomorrow),
+                    "today_max" : _float_feature(today_max),
+                    "today_min" : _float_feature(today_min),
+                    "tomorrow_max" : _float_feature(tomorrow_max),
+                    "tomorrow_min" : _float_feature(tomorrow_min)
                 }
             )
         )
@@ -121,19 +128,23 @@ def create_tfrecord_default(data_dirs, target_dir, record_name, variable_name, p
         today_data = sio.loadmat(os.path.join(data_dirs[0],today_filenames[i]))
         today_data = today_data[variable_name]
         today = process(today_data, [], 72, 288)
-        today, _, _ = pp.normalize(today)
+        today, today_max, today_min = pp.normalize(today)
         today = today.tostring()
 
         tomorrow_data = sio.loadmat(os.path.join(data_dirs[1], tomorrow_filenames[i]))
         tomorrow_data = tomorrow_data[variable_name]
         tomorrow = process(tomorrow_data, [], 72, 288)
-        tomorrow, _, _ = pp.normalize(tomorrow)
+        tomorrow, tomorrow_max, tomorrow_min = pp.normalize(tomorrow)
         tomorrow = tomorrow.tostring()
         example = tf.train.Example(
             features = tf.train.Features(
                 feature = {                  
                     'high_today': _bytes_feature(today),
-                    'tomorrow': _bytes_feature(tomorrow)
+                    'tomorrow': _bytes_feature(tomorrow),
+                    'today_max': _float_feature(today_max),
+                    'today_min': _float_feature(today_min),
+                    'tomorrow_max': _float_feature(tomorrow_max),
+                    'tomorrow_min': _float_feature(tomorrow_min)
                 }
             )
         )
@@ -150,7 +161,11 @@ def read_and_decode(filename, default, shape):
             serialized_example,
             features = {
                 "high_today":tf.FixedLenFeature([],tf.string),
-                "tomorrow":tf.FixedLenFeature([],tf.string)
+                "tomorrow":tf.FixedLenFeature([],tf.string),
+                "today_max": tf.FixedLenFeature([], tf.float32),
+                "today_min": tf.FixedLenFeature([], tf.float32),
+                "tomorrow_max": tf.FixedLenFeature([], tf.float32),
+                "tomorrow_min": tf.FixedLenFeature([], tf.float32)
             }
         )
         today = tf.decode_raw(features['high_today'],tf.float64)
@@ -159,7 +174,11 @@ def read_and_decode(filename, default, shape):
         tomorrow = tf.decode_raw(features['tomorrow'],tf.float64)
         tomorrow = tf.reshape(tomorrow, shape['high'])
         tomorrow = tf.cast(tomorrow, tf.float32)
-        return today, tomorrow
+        tomorrow_max = tf.cast(features['tomorrow_max'],tf.float32)
+        tomorrow_min = tf.cast(features['tomorrow_min'],tf.float32)
+        today_max = tf.cast(features['today_max'], tf.float32)
+        today_min = tf.cast(features['today_min'], tf.float32)
+        return today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min
     else:
         features = tf.parse_single_example(
             serialized_example,
@@ -173,7 +192,11 @@ def read_and_decode(filename, default, shape):
                 'low_today':tf.FixedLenFeature([],tf.string),
                 'mid_today':tf.FixedLenFeature([],tf.string),
                 'high_today':tf.FixedLenFeature([],tf.string),
-                'tomorrow':tf.FixedLenFeature([],tf.string)
+                'tomorrow':tf.FixedLenFeature([],tf.string),
+                "today_max":tf.FixedLenFeature([],tf.float32),
+                "today_min":tf.FixedLenFeature([],tf.float32),
+                "tomorrow_max":tf.FixedLenFeature([],tf.float32),
+                "tomorrow_min":tf.FixedLenFeature([],tf.float32)
             }
         )
         low_last = tf.decode_raw(features['low_last'], tf.float64)
@@ -203,51 +226,56 @@ def read_and_decode(filename, default, shape):
         high_today = tf.decode_raw(features['high_today'], tf.float64)
         high_today = tf.reshape(high_today, shape['high'])
         high_today = tf.cast(high_today, tf.float32)
+        today = high_today
         tomorrow = tf.decode_raw(features['tomorrow'], tf.float64)
         tomorrow = tf.reshape(tomorrow, shape['high'])
         tomorrow = tf.cast(tomorrow, tf.float32)
         low_today = tf.concat([low_lastlast,low_last,low_today],2)
         mid_today = tf.concat([mid_lastlast,mid_last,mid_today],2)
         high_today = tf.concat([high_lastlast, high_last, high_today],2)
-        return low_today, mid_today, high_today, tomorrow
+        tomorrow_max = tf.cast(features['tomorrow_max'],tf.float32)
+        tomorrow_min = tf.cast(features['tomorrow_min'],tf.float32)
+        today_max = tf.cast(features['today_max'], tf.float32)
+        today_min = tf.cast(features['today_min'], tf.float32)
+        return low_today, mid_today, high_today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min, today
 
 def test_inputs(record_path, batch_size, shape, min_after_dequeue):
     pass
 
 def data_inputs(record_path, batch_size, shape, min_after_dequeue, default=False, random=True):
     if default is True:
-        today, tomorrow = read_and_decode(record_path, True, shape)
+        today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min = read_and_decode(record_path, True, shape)
         if random is True:
-            today_batch, tomorrow_batch = tf.train.shuffle_batch(
-                [today, tomorrow], 
+            today_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch = tf.train.shuffle_batch(
+                [today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min], 
                 batch_size=batch_size,
                 num_threads=8,
                 capacity=min_after_dequeue + 30,
                 min_after_dequeue=min_after_dequeue
             )
         else:
-            today_batch, tomorrow_batch = tf.train.batch(
-                [today, tomorrow],
+            today_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch = tf.train.batch(
+                [today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min],
                 batch_size=batch_size,
-                num_threads=8,
+                num_threads=1,
                 capacity=min_after_dequeue + 30
             )
-        return today_batch, tomorrow_batch
+        return today_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch
     else:
-        low_today, mid_today, high_today, tomorrow = read_and_decode(record_path, False, shape)
+        low_today, mid_today, high_today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min, today = read_and_decode(record_path, False, shape)
         if random is True:
-            ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch = tf.train.shuffle_batch(
-                [low_today, mid_today, high_today, tomorrow], 
+            ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch, today_batch = tf.train.shuffle_batch(
+                [low_today, mid_today, high_today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min, today], 
                 batch_size=batch_size,
                 num_threads=8,
                 capacity=min_after_dequeue + 30,
                 min_after_dequeue=min_after_dequeue
             )
         else:
-            ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch = tf.train.batch(
-                [low_today, mid_today, high_today, tomorrow],
+            ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch, today_batch = tf.train.batch(
+                [low_today, mid_today, high_today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min, today],
                 batch_size=batch_size,
-                num_threads=8,
-                capacity=min_after_dequeue + 30
+                num_threads=1,
+                capacity=min_after_dequeue + 30,
             )
-        return ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch 
+        return ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch, today_batch

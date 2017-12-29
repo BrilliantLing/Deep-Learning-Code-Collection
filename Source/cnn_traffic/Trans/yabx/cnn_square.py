@@ -18,19 +18,25 @@ import losses
 
 def cnn(input_data, out_channels, batch_size):
     with tf.variable_scope('conv1') as scope:
-        conv1 = ops.conv2d(input_data, 3, 3, 1, 16, padding='VALID',name=scope.name)
-    pool1 = ops.max_pooling(conv1, 2, 2, padding='VALID', name='m_pool2')
+        conv1 = ops.conv2d(input_data, 5, 5, 1, 16, padding='SAME',name=scope.name)
     
     with tf.variable_scope('conv2') as scope:
-        conv2 = ops.conv2d(pool1, 3, 3, 16, 32, padding='VALID', name=scope.name)   
+        conv2 = ops.conv2d(conv1, 3, 3, 16, 32, padding='SAME', name=scope.name)   
     pool2 = ops.max_pooling(conv2, 2, 2, padding='VALID', name='m_pool2')
 
     with tf.variable_scope('conv3') as scope:
-        conv3= ops.conv2d(pool2, 3, 3, 32, 32, padding='VALID' ,name=scope.name)
-    pool3 = ops.max_pooling(conv2, 2, 2, padding='VALID', name='pool3')
+        conv3= ops.conv2d(pool2, 3, 3, 32, 64, padding='SAME' ,name=scope.name)
+
+    with tf.variable_scope('conv4') as scope:
+        conv4 = ops.conv2d(conv3, 3, 3, 64, 64, padding='SAME', name=scope.name)
+    pool4 = ops.max_pooling(conv4, 2, 2, padding='VALID', name='m_pool4')
+
+    with tf.variable_scope('conv5') as scope:
+        conv5 = ops.conv2d(pool4, 3, 3, 64, 64, padding='SAME', name=scope.name)
+    pool5 = ops.max_pooling(conv5, 2,2,padding='VALID', name='m_pool5')
 
     with tf.variable_scope('fc4'):
-        reshape = tf.reshape(pool3, [batch_size, -1])
+        reshape = tf.reshape(pool5, [batch_size, -1])
         dim = reshape.get_shape()[1].value
         weights = ut._variable_with_weight_decay(
             'weights',

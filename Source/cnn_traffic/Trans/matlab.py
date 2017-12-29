@@ -9,8 +9,6 @@ from six.moves import xrange
 import os
 import scipy.io as sio
 import numpy as np
-import tensorflow as tf
-
 import preprocess as pp
 
 def read_matfile(filename, variable_name):

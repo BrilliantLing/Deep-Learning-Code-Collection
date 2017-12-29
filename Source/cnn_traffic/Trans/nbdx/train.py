@@ -26,11 +26,12 @@ def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0, trainable=False)
 
-        ltoday, mtoday, htoday, tomorrow = rec.data_inputs(
+        ltoday, mtoday, htoday, tomorrow, _, _, _, _, _ = rec.data_inputs(
             FLAGS.train_input_path,
             FLAGS.train_batch_size,
             conf.shape_dict,
             30,
+            False,
             False
         )
         print(ltoday, mtoday, htoday)
@@ -43,12 +44,10 @@ def train():
         summary_op = tf.summary.merge_all()
         
         init = tf.global_variables_initializer()
+        coord = tf.train.Coordinator()
         sess = tf.Session()
-        #tf_debug.add_debug_tensor_watch(sess,'l_conv1')
-        #sess = tf_debug.LocalCLIDebugWrapperSession(sess,)
         sess.run(init)
-
-        tf.train.start_queue_runners(sess=sess)
+        tf.train.start_queue_runners(sess=sess, coord=coord)
 
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir, sess.graph)
 

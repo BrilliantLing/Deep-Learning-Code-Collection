@@ -55,7 +55,8 @@ def test():
             #print(2)
         num_epoch = int(math.ceil(FLAGS.num_examples_test/FLAGS.test_batch_size))
         mse_list = []
-        rer_list = []
+        mre_list = []
+        mae_list = []
         step = 0
         tf.train.start_queue_runners(sess=sess)
         while step < num_epoch:
@@ -89,17 +90,20 @@ def test():
             # matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step)+'r.mat'),real_matrix,'speed_t')
 
             mse_op = losses.mse_loss(pred, real)
-            rer_op = losses.relative_er(pred, real)
+            mre_op = losses.relative_er(pred, real)
+            mae_op = losses.absolute_er(pred, real)
             #mre = sum(sum(np.abs(pred_matrix-real_matrix)/real_matrix))/(32*54)
-            mse, rer = sess.run([mse_op,rer_op])
-            print('mse: ', mse, '    rer: ',rer)
+            mse, mre, mae = sess.run([mse_op, mre_op, mae_op])
+            print('mse: ', mse, '    mre: ', mre, '     mae:', mae)
             #print(predictions)
             mse_list.append(mse)
-            rer_list.append(rer)
+            mre_list.append(mre)
+            mae_list.append(mae)
             step += 1
 
         print('mse = ', np.mean(mse_list))
-        print('rer = ', np.mean(rer_list))
+        print('mre = ', np.mean(mre_list))
+        print('mae = ', np.mean(mae_list))
 
 
 def main():

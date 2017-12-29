@@ -92,11 +92,11 @@ def DivideDataset(origin,
                 shutil.copyfile(Tomorrow, os.path.join(train_tomorrow, Origin[x]))
                 print("Day %d is train sample" %x)
 
-
 def main():
     DivideDataset(OriginDir,
                   TrainLastlastDir, TrainLastDir, TrainTodayDir, TrainTomorrowDir,
-                  TestLastlastDir, TestLastDir, TestTodayDir, TestTomorrrow_dir)
+                  TestLastlastDir, TestLastDir, TestTodayDir, TestTomorrrow_dir,
+                  TestHistoryDir, 2)
 
 if __name__ == '__main__':
     main()    

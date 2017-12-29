@@ -26,7 +26,7 @@ FLAGS = tf.app.flags.FLAGS
 
 def test():
     with tf.Graph().as_default() as g:
-        today, tomorrow = rec.data_inputs(
+        today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min = rec.data_inputs(
             FLAGS.common_test_input_path,
             FLAGS.test_batch_size,
             conf.shape_dict,
@@ -34,12 +34,8 @@ def test():
             True,
             False
         )
-        #predictions = ann.ann(today,conf.HEIGHT*conf.HIGH_WIDTH,FLAGS.test_batch_size)
-        #predictions,conv1,conv2,conv3 = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
         predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
-        today_max_list, today_min_list = matlab.get_normalization_param(FLAGS.common_test_today_mat_dir,'speed',pp.high_resolution_speed_data_process)
-        tomorrow_max_list, tomorrow_min_list = matlab.get_normalization_param(FLAGS.common_test_tomorrow_mat_dir,'speed',pp.high_resolution_speed_data_process)
         saver = tf.train.Saver()
         #print(1)
         sess = tf.Session()
@@ -53,44 +49,28 @@ def test():
             #print(2)
         num_epoch = int(math.ceil(FLAGS.num_examples_test/FLAGS.test_batch_size))
         mse_list = []
-        rer_list = []
+        mre_list = []
+        mae_list = []
         step = 0
-        tf.train.start_queue_runners(sess=sess)
+        coord = tf.train.Coordinator()
+        tf.train.start_queue_runners(sess=sess, coord=coord)
         while step < FLAGS.num_examples_test:
-            #predictions = tf.add(tf.multiply(predictions, today_max_list[step]-today_min_list[step]), today_min_list[step])
-            #reality = tf.add(tf.multiply(reality,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
-                #print(1)
-            #mse_op = losses.mse_loss(predictions, reality)
-            #rer_op = losses.relative_er(predictions, reality)
             pred ,real = sess.run([predictions, reality])
-            pred_matrix = pred * (today_max_list[step]-today_min_list[step]) + today_min_list[step]
+            today_max_val, today_min_val, tomorrow_max_val, tomorrow_min_val = sess.run([today_max, today_min, tomorrow_max, tomorrow_min])
+            pred_matrix = pred * (today_max_val-today_min_val) + today_min_val
             pred_matrix = np.reshape(pred_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])
-            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step+1)+'.mat'),pred_matrix,'pred_m')
-            real_matrix = real * (tomorrow_max_list[step]-tomorrow_min_list[step]) + tomorrow_min_list[step]
+            real_matrix = real * (tomorrow_max_val-tomorrow_min_val) + tomorrow_min_val
             real_matrix = np.reshape(real_matrix,[conf.HEIGHT, conf.HIGH_WIDTH])
-            matlab.save_matrix(os.path.join(FLAGS.test_dir, str(step+1)+'r.mat'),real_matrix,'real_m')
-            pred = tf.add(tf.multiply(pred, today_max_list[step]-today_min_list[step]), today_min_list[step])
-            real = tf.add(tf.multiply(real,tomorrow_max_list[step]-tomorrow_min_list[step]),tomorrow_min_list[step])
-            mse_op = losses.mse_loss(pred, real)
-            rer_op = losses.relative_er(pred, real)
-            mse, rer = sess.run([mse_op,rer_op])
-            print('mse:', mse, '    rer:',rer)
-            #print(predictions)
+            mre, mse, mae = losses.metrics(pred_matrix, real_matrix)
+            print('mse:', mse, '    mre:', mre, '     mae:', mae)
             mse_list.append(mse)
-            rer_list.append(rer)
+            mre_list.append(mre)
+            mae_list.append(mae)
             step += 1
 
         print('mse = ', np.mean(mse_list))
-        print('rer = ', np.mean(rer_list))
-        #conv1,conv2,conv3 = sess.run([conv1,conv2,conv3])
-        #matlab.save_matrix(FLAGS.train_dir+'conv1.mat',conv1,'conv1')
-        # matlab.save_matrix(FLAGS.train_dir+'conv2.mat',conv2,'conv2')
-        # matlab.save_matrix(FLAGS.train_dir+'conv3.mat',conv3,'conv3')
-        # pred = tf.reshape(pred, [32, 54])
-        # real = tf.reshape(real, [32, 54])
-        # pred ,real = sess.run([pred, real])
-        # matlab.save_matrix(FLAGS.train_dir+'pred.mat',pred,'pred')
-        # matlab.save_matrix(FLAGS.train_dir+'real.mat',real,'real')
+        print('mre = ', np.mean(mre_list))
+        print('mae = ', np.mean(mae_list))
 
 
 def main():
