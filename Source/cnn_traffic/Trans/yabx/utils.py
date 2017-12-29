@@ -61,9 +61,21 @@ def save_list(filename, list):
 
 def train(loss, global_step, num_samples, mutable_lr=True):
     if mutable_lr is True:
-        learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*100, 0.5,staircase=True)
+        learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*30, 0.8,staircase=True)
     else:
         learning_rate = 0.1
     tf.summary.scalar('learning_rate', learning_rate)
     train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
     return train_step
+
+def congestion_judge(matrix):
+    count = 0
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            if matrix[i][j] < 50:
+                count += 1
+    #print(count)
+    if count >= 756:
+        return True
+    else:
+        return False
