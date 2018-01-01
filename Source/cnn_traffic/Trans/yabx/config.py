@@ -14,6 +14,7 @@ tf.app.flags.DEFINE_string('test_dir', 'D:\\MasterDL\\trans\\yabx\\test_log\\', 
 tf.app.flags.DEFINE_string('checkpoint_dir', 'D:\\MasterDL\\trans\\yabx\\checkpoint\\', """The directory where the checkpoint data saved in.""")
 tf.app.flags.DEFINE_string('train_input_path', 'D:\\MasterDL\\trans\yabx\\tfrecords\\train\\train.tfrecords', """The diretory where the input data for trainning saved in.""")
 tf.app.flags.DEFINE_string('test_input_path', 'D:\\MasterDL\\trans\yabx\\tfrecords\\test\\test.tfrecords', """The diretory where the input data for testing saved in.""")
+tf.app.flags.DEFINE_string('history_test_input_path', 'D:\\MasterDL\\trans\yabx\\tfrecords\\test\\test_history.tfrecords', """The path of  tfrecord file with history record""")
 tf.app.flags.DEFINE_string('common_train_input_path', 'D:\\MasterDL\\trans\\yabx\\tfrecords\\common_train\\train.tfrecords', """To be done.""")
 tf.app.flags.DEFINE_string('common_test_input_path', 'D:\\MasterDL\\trans\\yabx\\tfrecords\\common_test\\test.tfrecords',"""To be done.""")
 tf.app.flags.DEFINE_string('test_today_mat_dir','D:\\MasterDL\\data_set\\traffic_data\\2011_yabx_speed\\new_test\\today\\',"""To be done""")

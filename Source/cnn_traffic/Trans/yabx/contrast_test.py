@@ -34,7 +34,8 @@ def test():
             True,
             False
         )
-        predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        #predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        predictions = ann.ann(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(tomorrow, predictions.get_shape())
         saver = tf.train.Saver()
         #print(1)

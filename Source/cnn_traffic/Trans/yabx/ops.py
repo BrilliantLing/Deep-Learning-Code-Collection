@@ -72,6 +72,30 @@ def fc(input_data, in_channels, out_channels, regularization=True, name=None):
     ut._activation_summary(fc)
     return fc
 
+def ann_fc(input_data, in_channels, out_channels, regularization=True, name=None):
+    if regularization is True:
+        weights = ut._variable_with_weight_decay(
+            'weights',
+            [in_channels,out_channels],
+            tf.truncated_normal_initializer(stddev=0.05),
+            0.01
+        )
+    else:
+        weights = ut._variable_with_weight_decay(
+            'weights',
+            [in_channels,out_channels],
+            tf.truncated_normal_initializer(stddev=0.05),
+            0.0
+        )
+    biases = ut._variable_on_gpu(
+        'biases',
+        [out_channels],
+        tf.constant_initializer(0.1)
+    )
+    fc = tf.nn.relu(tf.matmul(input_data,weights)+biases, name=name)
+    ut._activation_summary(fc)
+    return fc
+
 def fc_sigmoid(input_data, in_channels, out_channels, regularization=True, name=None):
     if regularization is True:
         weights = ut._variable_with_weight_decay(

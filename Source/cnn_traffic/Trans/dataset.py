@@ -10,18 +10,22 @@ import random
 import shutil
 import matlab
 
-OriginDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\fix'
-TrainTodayDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\train\today'
-TrainTomorrowDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\train\tomorrow'
-TrainLastDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\train\last'
-TrainLastlastDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\train\lastlast'
+OriginDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new'
+TrainTodayDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_train\today'
+TrainTomorrowDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_train\tomorrow'
+TrainLastDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_train\last'
+TrainLastlastDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_train\lastlast'
 
-TestTodayDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\test\today'
-TestTomorrrow_dir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\test\tomorrow'
-TestLastDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\test\last'
-TestLastlastDir = r'D:\MasterDL\data_set\traffic_data\2011_nbdx_speed\exp\test\lastlast'
-TestHistoryDir = r''
-random.seed(5)
+TestTodayDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\today'
+TestTomorrrow_dir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\tomorrow'
+TestLastDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\last'
+TestLastlastDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\lastlast'
+TestHistoryDir = r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\history'
+
+# TempOrigin = r'D:\Test\Source'
+# TempTarget = r'D:\Test\Target'
+
+random.seed(1)
 
 def GenerateTestNum():
     BaseList = []
@@ -76,11 +80,11 @@ def DivideDataset(origin,
                 shutil.copyfile(Last, os.path.join(test_last, Origin[x-7]))
                 shutil.copyfile(Today, os.path.join(test_today, Origin[x-1]))
                 shutil.copyfile(Tomorrow, os.path.join(test_tomorrow, Origin[x]))
-                HistoryPathList = HistoryPaths(3, x, origin, Origin)
-                day = matlab.read_matfile(HistoryPath, 'sudushuju')
+                HistoryPathList = HistoryPaths(history_days, x, origin, Origin)
+                day = matlab.read_matfile(HistoryPathList[0], 'speed')
                 Sum = np.zeros((day.shape[0], day.shape[1]))
                 for HistoryPath in HistoryPathList:
-                    Day = matlab.read_matfile(HistoryPath, 'sudushuju')
+                    Day = matlab.read_matfile(HistoryPath, 'speed')
                     Sum += Day
                 Mean = Sum / history_days
                 matlab.save_matrix(os.path.join(history_dir, Origin[x]), Mean, 'history_mean')
@@ -97,6 +101,17 @@ def main():
                   TrainLastlastDir, TrainLastDir, TrainTodayDir, TrainTomorrowDir,
                   TestLastlastDir, TestLastDir, TestTodayDir, TestTomorrrow_dir,
                   TestHistoryDir, 2)
+    # FileList = os.listdir(TempOrigin)
+    # HistoryFiles = HistoryPaths(2, 2, TempOrigin, FileList)
+    # print(HistoryFiles)
+    # day = matlab.read_matfile(HistoryFiles[0], 'speed')
+    # Sum = np.zeros((day.shape[0], day.shape[1]))
+    # for HistoryPath in HistoryFiles:
+    #     Day = matlab.read_matfile(HistoryPath, 'speed')
+    #     print(Day)
+    #     Sum += Day
+    # Mean = Sum / 2
+    # print(Mean)
 
 if __name__ == '__main__':
     main()    

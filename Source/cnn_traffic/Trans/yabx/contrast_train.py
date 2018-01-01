@@ -28,7 +28,7 @@ def train():
     with tf.Graph().as_default():
         global_step = tf.Variable(0, trainable=False)
 
-        today, tomorrow = rec.data_inputs(
+        today, tomorrow, _, _, _, _ = rec.data_inputs(
             FLAGS.common_train_input_path,
             FLAGS.train_batch_size,
             conf.shape_dict,
@@ -36,9 +36,9 @@ def train():
             True,
             False
         )
-        #predictions = ann.ann(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        predictions = ann.ann(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         #predictions, = cnn.cnn(mtoday, conf.HEIGHT*conf.MID_WIDTH, FLAGS.train_batch_size)
-        predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
+        #predictions = cnn_square.cnn(today, conf.HEIGHT*conf.HIGH_WIDTH, FLAGS.train_batch_size)
         reality = tf.reshape(tomorrow , predictions.get_shape())
         loss = losses.total_loss(predictions, reality, losses.mse_loss)
         train_step = ut.train(loss, global_step, conf.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN)
