@@ -126,7 +126,6 @@ def create_test_tfrecord(data_dirs, history_dir, target_dir, record_name,
         history_data = sio.loadmat(os.path.join(history_dir, history_filenames[i]))
         history_data = history_data[history_name]
         history = high_process(history_data, [], 72, 288)
-        history, _, _ = pp.normalize(history)
         history = history.tostring()
         today_data = sio.loadmat(os.path.join(data_dirs[0], today_filenames[i]))
         today_data = today_data[variable_name]
@@ -409,7 +408,7 @@ def data_inputs(record_path, batch_size, shape, min_after_dequeue, default=False
             today_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch = tf.train.batch(
                 [today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min],
                 batch_size=batch_size,
-                num_threads=1,
+                num_threads=8,
                 capacity=min_after_dequeue + 30
             )
         return today_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch
@@ -427,7 +426,7 @@ def data_inputs(record_path, batch_size, shape, min_after_dequeue, default=False
             ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch, today_batch = tf.train.batch(
                 [low_today, mid_today, high_today, tomorrow, today_max, today_min, tomorrow_max, tomorrow_min, today],
                 batch_size=batch_size,
-                num_threads=1,
+                num_threads=8,
                 capacity=min_after_dequeue + 30,
             )
         return ltoday_batch, mtoday_batch, htoday_batch, tomorrow_batch, today_max_batch, today_min_batch, tomorrow_max_batch, tomorrow_min_batch, today_batch

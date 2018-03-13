@@ -61,7 +61,7 @@ def save_list(filename, list):
 
 def train(loss, global_step, num_samples, mutable_lr=True):
     if mutable_lr is True:
-        learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*30, 0.8,staircase=True)
+        learning_rate = tf.train.exponential_decay(0.1, global_step, num_samples*100, 0.5,staircase=True)
     else:
         learning_rate = 0.1
     tf.summary.scalar('learning_rate', learning_rate)

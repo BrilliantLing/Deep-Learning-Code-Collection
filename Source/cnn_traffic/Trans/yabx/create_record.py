@@ -53,26 +53,26 @@ def main():
     #                     pp.high_resolution_speed_data_process
     #                     )
 
-    # rec.create_test_tfrecord([test_today_dir, test_tomorrow_dir, test_lastlast_dir, test_last_dir],
-    #                         r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\history',
-    #                         test_tfrecords_dir,
-    #                         'test_history.tfrecords',
-    #                         'speed', 'history_mean',
-    #                         pp.low_resolution_speed_data_process,
-    #                         pp.mid_resolution_speed_data_process,
-    #                         pp.high_resolution_speed_data_process
-    #                         )
-    rec.create_tfrecord_default([common_train_today_dir, common_train_tomorrow_dir],
-                                common_train_tfrecords_dir,
-                                'train.tfrecords',
-                                'speed',
-                                pp.high_resolution_speed_data_process
-                               )
-    rec.create_tfrecord_default([common_test_today_dir, common_test_tomorrow_dir],
-                                common_test_tfrecords_dir,
-                                'test.tfrecords',
-                                'speed',
-                                pp.high_resolution_speed_data_process
-                               )
+    rec.create_test_tfrecord([test_today_dir, test_tomorrow_dir, test_lastlast_dir, test_last_dir],
+                            r'D:\MasterDL\data_set\traffic_data\2011_yabx_speed\new_test\history',
+                            test_tfrecords_dir,
+                            'test_history.tfrecords',
+                            'speed', 'history_mean',
+                            pp.low_resolution_speed_data_process,
+                            pp.mid_resolution_speed_data_process,
+                            pp.high_resolution_speed_data_process
+                            )
+    # rec.create_tfrecord_default([common_train_today_dir, common_train_tomorrow_dir],
+    #                             common_train_tfrecords_dir,
+    #                             'train.tfrecords',
+    #                             'speed',
+    #                             pp.high_resolution_speed_data_process
+    #                            )
+    # rec.create_tfrecord_default([common_test_today_dir, common_test_tomorrow_dir],
+    #                             common_test_tfrecords_dir,
+    #                             'test.tfrecords',
+    #                             'speed',
+    #                             pp.high_resolution_speed_data_process
+    #                            )
 if __name__ == '__main__':
     main()

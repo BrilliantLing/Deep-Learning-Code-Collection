@@ -1,5 +1,6 @@
-%clear all
-%load('D:\MasterDL\trans\yabx\figure\ground_truth_day30\day30_result.mat')
+clear all
+load('D:\MasterDL\trans\yabx\new_test_log\pred\66.mat')
+load('D:\MasterDL\trans\yabx\new_test_log\real\66.mat')
 
 figure()
 %plot(ann(10,:))
@@ -12,9 +13,9 @@ figure()
 %hold on 
 
 %nhnx 15,19,30,
-plot(pred_m(42,:))
+plot(pred_m(12,:))
 hold on
-plot(real_m(42,:))
+plot(real_m(12,:))
 legend('MSCNN', 'Ground-truth')
 
 grid on
