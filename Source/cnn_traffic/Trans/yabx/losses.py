@@ -49,54 +49,72 @@ def total_loss(predictions, reality, loss_func):
 
 def congestion_mre(prediction, reality):
     mre_list = []
-    for i in range(reality.shape[0]):
-        for j in range(reality.shape[1]):
-            if reality[i][j] < 50:
-                mre = abs(prediction[i][j]-reality[i][j])/reality[i][j]
-                mre_list.append(mre)
-    return np.mean(mre_list)
+    # for i in range(reality.shape[0]):
+    #     for j in range(reality.shape[1]):
+    #         if reality[i][j] < 50:
+    #             mre = abs(prediction[i][j]-reality[i][j])/reality[i][j]
+    #             mre_list.append(mre)
+    mre = abs(prediction - reality) / reality
+    mre = np.mean(mre)
+    return mre
 
 def congestion_mae(prediction, reality):
     mae_list = []
-    for i in range(reality.shape[0]):
-        for j in range(reality.shape[1]):
-            if reality[i][j] < 50:
-                mae = abs(prediction[i][j]-reality[i][j])
-                mae_list.append(mae)
-    return np.mean(mae_list)
+    # for i in range(reality.shape[0]):
+    #     for j in range(reality.shape[1]):
+    #         if reality[i][j] < 50:
+    #             mae = abs(prediction[i][j]-reality[i][j])
+    #             mae_list.append(mae)
+    mae = abs(prediction - reality)
+    mae = np.mean(mae)
+    return mae
 
 def congestion_mse(prediction, reality):
     mse_list = []
-    for i in range(reality.shape[0]):
-        for j in range(reality.shape[1]):
-            if reality[i][j] < 50:
-                mse = (prediction[i][j]-reality[i][j])*(prediction[i][j]-reality[i][j])
-                mse_list.append(mse)
+    # for i in range(reality.shape[0]):
+    #     for j in range(reality.shape[1]):
+    #         if reality[i][j] < 50:
+    #             mse = (prediction[i][j]-reality[i][j])*(prediction[i][j]-reality[i][j])
+    #             mse_list.append(mse)
+    mse = (prediction-reality)*(prediction-reality)
+    mse = np.mean(mse)
     return np.mean(mse_list)
 
 def np_mse(prediction, reality):
+    # mse_list = []
+    # for i in range(reality.shape[0]):
+    #     for j in range(reality.shape[1]):
+    #         mse = (prediction[i][j]-reality[i][j])*(prediction[i][j]-reality[i][j])
+    #         mse_list.append(mse)
+    # return np.mean(mse_list)
     mse_list = []
-    for i in range(reality.shape[0]):
-        for j in range(reality.shape[1]):
-            mse = (prediction[i][j]-reality[i][j])*(prediction[i][j]-reality[i][j])
-            mse_list.append(mse)
+    mse = (prediction-reality)*(prediction-reality)
+    mse = np.mean(mse)
     return np.mean(mse_list)
 
 def np_mre(prediction, reality):
+    # mre_list = []
+    # for i in range(reality.shape[0]):
+    #     for j in range(reality.shape[1]):
+    #         mre = abs(prediction[i][j]-reality[i][j])/reality[i][j]
+    #         mre_list.append(mre)
+    # return np.mean(mre_list)
     mre_list = []
-    for i in range(reality.shape[0]):
-        for j in range(reality.shape[1]):
-            mre = abs(prediction[i][j]-reality[i][j])/reality[i][j]
-            mre_list.append(mre)
-    return np.mean(mre_list)
+    mre = abs(prediction - reality) / reality
+    mre = np.mean(mre)
+    return mre
 
 def np_mae(prediction, reality):
+    # mae_list = []
+    # for i in range(reality.shape[0]):
+    #     for j in range(reality.shape[1]):
+    #         mae = abs(prediction[i][j]-reality[i][j])
+    #         mae_list.append(mae)
+    # return np.mean(mae_list)
     mae_list = []
-    for i in range(reality.shape[0]):
-        for j in range(reality.shape[1]):
-            mae = abs(prediction[i][j]-reality[i][j])
-            mae_list.append(mae)
-    return np.mean(mae_list)
+    mae = abs(prediction - reality)
+    mae = np.mean(mae)
+    return mae
 
 def metrics(prediction, reality):
     return np_mre(prediction, reality), np_mse(prediction, reality), np_mae(prediction, reality)
